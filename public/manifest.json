@@ -1,0 +1,22 @@
+{
+  "name": "Grand Line Ledger | Pirate Crew Expense Tracker",
+  "short_name": "Grand Line Ledger",
+  "description": "Shared voyage expense ledger for pirate crews.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#07111d",
+  "theme_color": "#07111d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/luffy.webp",
+      "sizes": "192x192",
+      "type": "image/webp"
+    },
+    {
+      "src": "/assets/luffy.webp",
+      "sizes": "512x512",
+      "type": "image/webp"
+    }
+  ]
+}

@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#07111d">
+    <title>Grand Line Ledger | Straw Hat Crew</title>
+    <meta name="description" content="A shared voyage ledger for the Straw Hat crew.">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css?v=2.0">
+    <script src="script.js?v=2.0" defer></script>
+  </head>
+  <body>
+    <div class="app-frame">
+      <div class="sidebar-scrim" id="sidebar-scrim" hidden></div>
+      <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+        <a class="brand" href="index.html" aria-label="Grand Line Ledger home">
+          <span class="straw-mark" aria-hidden="true"><i></i></span>
+          <span class="brand-copy"><strong>GRAND LINE</strong><small>LEDGER</small></span>
+        </a>
+
+        <nav class="primary-nav" aria-label="Ledger sections">
+          <button class="nav-item is-active" type="button" data-view="dashboard" aria-current="page">
+            <span class="nav-icon" aria-hidden="true">▦</span><span>Dashboard</span>
+          </button>
+          <button class="nav-item" type="button" data-view="crew">
+            <span class="nav-icon" aria-hidden="true">♟</span><span>Crew</span>
+          </button>
+          <button class="nav-item" type="button" data-view="expenses">
+            <span class="nav-icon" aria-hidden="true">▤</span><span>Expenses</span>
+          </button>
+          <button class="nav-item" type="button" data-view="settlements">
+            <span class="nav-icon" aria-hidden="true">⚖</span><span>Settlements</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-bottom" aria-hidden="true">
+          <span class="sidebar-compass">✥</span>
+        </div>
+      </aside>
+
+      <div class="app-shell">
+        <header class="topbar">
+          <button class="mobile-menu" id="mobile-menu" type="button" aria-label="Open navigation" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
+          <div class="crew-selector-wrap">
+            <span class="status-dot"></span>
+            <select id="active-crew-select" class="crew-select" aria-label="Select active crew"></select>
+            <button class="button-new-crew" id="open-new-crew" type="button" title="Create a new crew">+ New Crew</button>
+          </div>
+          <div class="topbar-actions">
+            <div class="currency-select-wrap">
+              <select id="currency-select" class="currency-select" aria-label="Currency converter" title="Change currency">
+                <option value="BELI" selected>฿ Beli</option>
+                <option value="USD">$ USD</option>
+                <option value="EUR">€ EUR</option>
+                <option value="INR">₹ INR</option>
+                <option value="JPY">¥ JPY</option>
+              </select>
+            </div>
+            <button class="theme-toggle-switch" id="theme-switch" type="button" role="switch" aria-checked="false" aria-label="Toggle Light and Dark Mode" title="Switch Theme (Light / Dark)">
+              <span class="switch-track">
+                <span class="switch-icon switch-sun" aria-hidden="true">☀️</span>
+                <span class="switch-icon switch-moon" aria-hidden="true">🌙</span>
+                <span class="switch-thumb"></span>
+              </span>
+            </button>
+            <button class="icon-button sound-button" id="sound-toggle" type="button" aria-label="Toggle Sound Effects" title="Sound Effects: ON (Click to mute)">
+              <span class="sound-icon-graphic" id="sound-icon" aria-hidden="true">🔔</span>
+            </button>
+            <button class="icon-button notification-button" id="notifications" type="button" aria-label="Notifications">
+              <span aria-hidden="true">♧</span><i class="notification-dot"></i>
+            </button>
+            <div class="profile-wrap">
+              <button class="profile-trigger" id="profile-trigger" type="button" aria-expanded="false" aria-haspopup="true">
+                <span class="avatar avatar-profile" id="profile-avatar"><img src="assets/luffy.webp" alt=""></span>
+                <span class="profile-copy"><strong id="profile-name">Luffy</strong><small id="profile-role">Captain</small></span>
+                <span class="chevron" aria-hidden="true">⌄</span>
+              </button>
+              <div class="profile-menu" id="profile-menu" role="menu" hidden>
+                <div class="profile-menu-heading"><strong id="profile-menu-name">Monkey D. Luffy</strong><small id="profile-menu-role">Captain · Straw Hat Crew</small></div>
+                <button type="button" role="menuitem" data-view="crew">View crew</button>
+                <button type="button" role="menuitem" id="theme-toggle">Switch appearance</button>
+                <a href="/" role="menuitem">Return to login</a>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="main-content">
+          <section class="hero" id="hero" aria-labelledby="hero-title">
+            <video class="hero-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+              <source src="assets/ship-sailing.mp4" type="video/mp4">
+            </video>
+            <div class="hero-shade" aria-hidden="true"></div>
+            <div class="hero-copy">
+              <h1 id="hero-title">Track the Crew’s<br><em>Treasure.</em></h1>
+              <button class="button button-gold add-expense-trigger" type="button" data-open-expense>
+                <span class="button-plus" aria-hidden="true">+</span> Add Expense
+              </button>
+            </div>
+            <div class="hero-coordinate" aria-hidden="true"><span>LOG POSE</span><i></i><span>WATER 7 · 1520</span></div>
+          </section>
+
+          <section class="summary-grid" id="summary-grid" aria-label="Crew balance summary">
+            <article class="summary-card summary-gold">
+              <span class="summary-icon" aria-hidden="true">◉</span>
+              <div><p>Total Spend</p><strong id="total-spend">฿ 0</strong></div>
+              <span class="summary-note">ALL TIME</span>
+            </article>
+            <article class="summary-card summary-red">
+              <span class="summary-icon" aria-hidden="true">↑</span>
+              <div><p>You Owe</p><strong id="you-owe">฿ 0</strong></div>
+              <span class="summary-note">TO CREW</span>
+            </article>
+            <article class="summary-card summary-green">
+              <span class="summary-icon" aria-hidden="true">↓</span>
+              <div><p>You Get Back</p><strong id="you-get">฿ 0</strong></div>
+              <span class="summary-note">INCOMING</span>
+            </article>
+            <article class="summary-card summary-neutral">
+              <span class="summary-icon" aria-hidden="true">♟</span>
+              <div><p>Active Crew</p><strong id="active-crew">10</strong></div>
+              <span class="summary-note">ON BOARD</span>
+            </article>
+          </section>
+
+          <div class="view-heading" id="view-heading" hidden>
+            <p class="eyebrow"><span class="eyebrow-rule"></span> STRAW HAT CREW · LEDGER</p>
+            <h1 id="view-title">Crew</h1>
+          </div>
+
+          <section class="dashboard-grid view-panel" data-view-panel="dashboard" aria-label="Dashboard overview">
+            <article class="panel expense-panel">
+              <div class="panel-heading">
+                <div class="panel-title-wrap"><span class="panel-title-icon" aria-hidden="true">▤</span><div><h2>Recent Expenses</h2></div></div>
+                <button class="quiet-link" type="button" data-view="expenses">View All <span aria-hidden="true">→</span></button>
+              </div>
+              <div class="table-scroll">
+                <table class="expense-table">
+                  <thead><tr><th scope="col">Name</th><th scope="col">Category</th><th scope="col">Paid By</th><th scope="col">Amount</th><th scope="col">Date</th></tr></thead>
+                  <tbody id="recent-expense-rows"></tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="panel settlement-panel">
+              <div class="panel-heading">
+                <div class="panel-title-wrap"><span class="panel-title-icon scale-icon" aria-hidden="true">⚖</span><div><h2>Debt Settlements</h2></div></div>
+                <button class="quiet-link" type="button" data-view="settlements">View All <span aria-hidden="true">→</span></button>
+              </div>
+              <div class="settlement-list" id="recent-settlements"></div>
+            </article>
+          </section>
+
+          <section class="panel view-panel" data-view-panel="crew" hidden aria-labelledby="crew-title">
+            <div class="panel-heading"><div class="panel-title-wrap"><span class="panel-title-icon" aria-hidden="true">♟</span><div><h2 id="crew-title">The Crew</h2><p>All hands on this voyage</p></div></div><div class="crew-heading-actions"><span class="crew-count" id="crew-count">10 MEMBERS</span><button class="button button-small button-outline" type="button" data-open-member><span class="button-plus" aria-hidden="true">+</span> Add member</button><button class="button button-small button-outline" type="button" id="crew-new-btn"><span class="button-plus" aria-hidden="true">+</span> New Crew</button><button class="button button-small button-outline" type="button" id="crew-delete-btn" style="color: #cb827b;" title="Delete this crew">Delete Crew</button></div></div>
+            <div class="crew-grid" id="crew-grid"></div>
+          </section>
+
+          <section class="panel view-panel" data-view-panel="expenses" hidden aria-labelledby="expenses-title">
+            <div class="panel-heading">
+              <div class="panel-title-wrap"><span class="panel-title-icon" aria-hidden="true">▤</span><div><h2 id="expenses-title">All Expenses</h2></div></div>
+              <div class="crew-heading-actions">
+                <button class="button button-small button-outline" type="button" id="export-csv-btn" title="Download Voyage Manifest as CSV">
+                  <span aria-hidden="true">↓</span> Export CSV
+                </button>
+                <button class="button button-small button-outline" type="button" id="print-ledger-btn" title="Print Voyage Receipt">
+                  <span aria-hidden="true">⎙</span> Print
+                </button>
+                <button class="button button-small button-outline" type="button" data-open-expense>
+                  <span class="button-plus" aria-hidden="true">+</span> Add Expense
+                </button>
+              </div>
+            </div>
+
+            <div class="category-analytics" id="category-analytics">
+              <div class="category-analytics-header">
+                <strong>Treasure Allocation by Category</strong>
+                <span id="category-analytics-total">Total: ฿ 0</span>
+              </div>
+              <div class="category-bars-wrap" id="category-bars-wrap"></div>
+            </div>
+
+            <div class="category-filter-row" id="category-filters">
+              <button class="filter-pill is-active" type="button" data-filter="ALL">All Categories</button>
+              <button class="filter-pill" type="button" data-filter="Food">🍖 Food</button>
+              <button class="filter-pill" type="button" data-filter="Travel">🧭 Travel</button>
+              <button class="filter-pill" type="button" data-filter="Supplies">📦 Supplies</button>
+              <button class="filter-pill" type="button" data-filter="Maintenance">🔧 Maintenance</button>
+              <button class="filter-pill" type="button" data-filter="Accommodation">🏠 Lodging</button>
+              <button class="filter-pill" type="button" data-filter="Other">💰 Other</button>
+            </div>
+
+            <div class="table-scroll"><table class="expense-table full-expense-table"><thead><tr><th scope="col">Name</th><th scope="col">Category</th><th scope="col">Paid By</th><th scope="col">Split</th><th scope="col">Amount</th><th scope="col">Date</th><th scope="col">Action</th></tr></thead><tbody id="all-expense-rows"></tbody></table></div>
+          </section>
+
+          <section class="panel view-panel" data-view-panel="settlements" hidden aria-labelledby="settlements-title">
+            <div class="panel-heading"><div class="panel-title-wrap"><span class="panel-title-icon scale-icon" aria-hidden="true">⚖</span><div><h2 id="settlements-title">Settle Up</h2></div></div><span class="crew-count" id="pending-count">00 OPEN</span></div>
+            <div class="settlement-list settlement-list-full" id="all-settlements"></div>
+            <div class="panel-heading" style="margin-top: 18px; border-top: 1px solid var(--line);"><div class="panel-title-wrap"><span class="panel-title-icon" aria-hidden="true">✓</span><div><h2>Settled History</h2><p>Past payments recorded on this voyage</p></div></div><span class="crew-count" id="settled-count">00 SETTLED</span></div>
+            <div class="settlement-list settlement-list-full" id="settled-history"></div>
+          </section>
+
+          <footer class="page-footer"></footer>
+        </main>
+      </div>
+    </div>
+
+    <dialog class="expense-dialog" id="expense-dialog" aria-labelledby="expense-dialog-title">
+      <form class="expense-form" id="expense-form">
+        <div class="modal-heading">
+          <div><p class="eyebrow"><span class="eyebrow-rule"></span> CREW LEDGER</p><h2 id="expense-dialog-title">Add an expense</h2><p>Split the treasure fairly.</p></div>
+          <button class="modal-close" id="close-expense" type="button" aria-label="Close dialog">×</button>
+        </div>
+        <label class="form-field"><span>Expense name</span><input id="expense-name" name="name" type="text" maxlength="80" placeholder="e.g. Dinner at Baratie" required></label>
+        <div class="form-row">
+          <label class="form-field"><span>Amount <small>฿</small></span><input id="expense-amount" name="amount" type="number" min="0.01" max="10000000" step="0.01" inputmode="decimal" placeholder="0.00" required></label>
+          <label class="form-field"><span>Category</span><select id="expense-category" name="category"><option value="Food">🍖 Food</option><option value="Travel">🧭 Travel</option><option value="Supplies">📦 Supplies</option><option value="Maintenance">🔧 Maintenance</option><option value="Accommodation">🏠 Lodging</option><option value="Other">💰 Other</option></select></label>
+        </div>
+        <label class="form-field"><span>Paid by</span><select id="expense-payer" name="payer"></select></label>
+        <fieldset class="split-fieldset">
+          <legend>Split method</legend>
+          <div class="split-switch" role="group" aria-label="Split method">
+            <button class="is-selected" type="button" data-split-mode="equal" aria-pressed="true">Equal split</button>
+            <button type="button" data-split-mode="custom" aria-pressed="false">Custom split</button>
+          </div>
+        </fieldset>
+        <fieldset class="member-fieldset">
+          <legend>Members involved</legend>
+          <p class="member-hint">All crew members are included by default.</p>
+          <div class="member-check-grid" id="member-check-grid"></div>
+        </fieldset>
+        <div class="custom-shares" id="custom-shares" hidden>
+          <div class="custom-shares-heading"><span>Custom shares</span><small>Must equal the expense total</small></div>
+          <div id="custom-share-rows"></div>
+        </div>
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+        <div class="modal-actions"><button class="button button-ghost" id="cancel-expense" type="button">Cancel</button><button class="button button-gold" type="submit">Add to Ledger <span aria-hidden="true">→</span></button></div>
+      </form>
+    </dialog>
+
+    <dialog class="expense-dialog member-dialog" id="member-dialog" aria-labelledby="member-dialog-title">
+      <form class="expense-form" id="member-form">
+        <div class="modal-heading">
+          <div><p class="eyebrow"><span class="eyebrow-rule"></span> STRAW HAT CREW</p><h2 id="member-dialog-title">Add a crew member</h2><p>Keep your roster shipshape.</p></div>
+          <button class="modal-close" id="close-member" type="button" aria-label="Close dialog">×</button>
+        </div>
+        <input id="member-original-name" type="hidden">
+        <label class="form-field"><span>Name</span><input id="member-name" type="text" maxlength="30" placeholder="Crew member name" required></label>
+        <div class="form-row">
+          <label class="form-field"><span>Role</span><input id="member-role" type="text" maxlength="40" placeholder="Navigator"></label>
+          <label class="form-field"><span>Bounty</span><input id="member-bounty" type="text" maxlength="40" placeholder="Optional"></label>
+        </div>
+
+        <div class="avatar-select-block">
+          <label class="form-field-label"><strong>Choose One Piece Character Avatar</strong></label>
+          <div class="avatar-picker-grid" id="avatar-picker-grid"></div>
+          <input id="member-portrait" type="hidden">
+          <label class="form-field" style="margin-top: 10px;">
+            <span>Or Custom Image URL</span>
+            <input id="member-custom-url" type="url" placeholder="https://example.com/pirate.png">
+          </label>
+        </div>
+
+        <p class="form-error" id="member-error" role="alert" hidden></p>
+        <div class="modal-actions"><button class="button button-ghost" id="cancel-member" type="button">Cancel</button><button class="button button-gold" type="submit" id="save-member">Add member <span aria-hidden="true">→</span></button></div>
+      </form>
+    </dialog>
+
+    <dialog class="expense-dialog member-dialog" id="new-crew-dialog" aria-labelledby="new-crew-dialog-title">
+      <form class="expense-form" id="new-crew-form">
+        <div class="modal-heading">
+          <div><p class="eyebrow"><span class="eyebrow-rule"></span> FLEET ARCHIVE</p><h2 id="new-crew-dialog-title">Assemble a new crew</h2><p>Form a new pirate crew or expense group.</p></div>
+          <button class="modal-close" id="close-new-crew" type="button" aria-label="Close dialog">×</button>
+        </div>
+        <label class="form-field"><span>Crew name</span><input id="new-crew-name" name="name" type="text" maxlength="40" placeholder="e.g. Heart Pirates, Red Hair Pirates" required></label>
+        <div class="form-row">
+          <label class="form-field"><span>Captain / First member</span><input id="new-crew-captain" name="captain" type="text" maxlength="30" placeholder="e.g. Law, Shanks" required></label>
+          <label class="form-field"><span>Role</span><input id="new-crew-role" name="role" type="text" maxlength="40" placeholder="Captain"></label>
+        </div>
+        <p class="form-error" id="new-crew-error" role="alert" hidden></p>
+        <div class="modal-actions"><button class="button button-ghost" id="cancel-new-crew" type="button">Cancel</button><button class="button button-gold" type="submit" id="save-new-crew">Create Crew <span aria-hidden="true">→</span></button></div>
+      </form>
+    </dialog>
+
+    <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+  </body>
+</html>

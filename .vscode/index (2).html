@@ -1,0 +1,2153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CrewSplit — Grand Line Expense Ledger</title>
+<meta name="description" content="Split crew expenses fairly and settle up with the fewest payments.">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --cream: #f4dfb2;
+            --paper: #ead19c;
+            --gold: #f5c45b;
+            --gold-dark: #c78b2c;
+            --ink: #24180e;
+            --nav: #07121b;
+            --red: #b92e24;
+            --green: #16834b;
+            --blue: #075f9e;
+            --line: rgba(255, 220, 140, 0.22);
+            --page-bg: #06131d;
+            --page-text: #ffffff;
+            --sidebar-bg: linear-gradient(180deg, rgba(3, 12, 18, 0.98), rgba(4, 17, 25, 0.93));
+            --sidebar-text: #ffffff;
+            --panel-bg: linear-gradient(180deg, rgba(5, 16, 24, 0.94), rgba(4, 13, 20, 0.94));
+            --panel-text: #ffffff;
+            --panel-muted: #c7c9ca;
+            --ledger-bg: linear-gradient(135deg, rgba(247, 224, 178, 0.98), rgba(232, 202, 143, 0.97));
+            --ledger-text: #24180e;
+            --quote-bg: linear-gradient(135deg, #ead29d, #f4dfb2);
+            --quote-text: #3b2818;
+            --switch-track: #1a2c38;
+            --switch-thumb: #f4dfb2;
+            --switch-thumb-label: #20180d;
+        }
+
+        body[data-theme="light"] {
+            --page-bg: #f4ead0;
+            --page-text: #1c150e;
+            --sidebar-bg: linear-gradient(180deg, rgba(244, 220, 172, 0.96), rgba(216, 184, 112, 0.95));
+            --sidebar-text: #2b1a10;
+            --panel-bg: linear-gradient(180deg, rgba(255, 249, 239, 0.96), rgba(242, 225, 182, 0.94));
+            --panel-text: #1c150e;
+            --panel-muted: #4d4037;
+            --ledger-bg: linear-gradient(135deg, rgba(255, 245, 216, 0.98), rgba(239, 213, 160, 0.96));
+            --ledger-text: #22160e;
+            --quote-bg: linear-gradient(135deg, #f7e7bd, #f2dfb6);
+            --quote-text: #3a2b18;
+            --switch-track: #d8b97d;
+            --switch-thumb: #fff7e8;
+            --switch-thumb-label: #1b1209;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+            font-family: Inter, system-ui, sans-serif;
+            color: var(--page-text);
+            background: var(--page-bg);
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* =========================================================
+           MAIN BACKGROUND
+        ========================================================= */
+
+        .app {
+            min-height: 100vh;
+
+            position: relative;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(2, 9, 14, 0.98) 0%,
+                    rgba(2, 10, 16, 0.88) 17%,
+                    rgba(2, 10, 16, 0.25) 35%,
+                    rgba(2, 10, 16, 0.08) 100%
+                ),
+                linear-gradient(
+                    180deg,
+                    rgba(0, 0, 0, 0.05),
+                    rgba(0, 0, 0, 0.45)
+                ),
+                url("ocean-dashboard-bg.jpg") center / cover fixed;
+        }
+
+        .app::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+
+            background:
+                radial-gradient(
+                    circle at 75% 20%,
+                    transparent 0,
+                    rgba(0, 0, 0, 0.08) 60%,
+                    rgba(0, 0, 0, 0.38) 100%
+                );
+        }
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================= */
+
+        .sidebar {
+            position: fixed;
+            z-index: 20;
+
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            width: 285px;
+
+            padding: 24px 20px;
+
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+
+            border-right: 2px solid rgba(191, 137, 48, 0.35);
+
+            box-shadow:
+                12px 0 40px rgba(0, 0, 0, 0.35);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 0 8px 24px;
+        }
+
+        .brand-logo {
+            width: 58px;
+            height: 58px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 50%;
+
+            background: #f5bd35;
+            color: #111;
+
+            font-size: 30px;
+
+            border: 3px solid #fff;
+
+            box-shadow:
+                0 0 0 3px #0a1822;
+        }
+
+        .brand h1 {
+            margin: 0;
+
+            font-family: Cinzel, serif;
+            font-size: 27px;
+        }
+
+        .brand p {
+            margin: 2px 0 0;
+
+            color: #f4c86d;
+
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Navigation */
+
+        .nav {
+            display: grid;
+            gap: 9px;
+            margin-top: 10px;
+        }
+
+        .nav button {
+            border: 0;
+
+            color: #fff;
+            background: transparent;
+
+            border-radius: 12px;
+
+            text-align: left;
+
+            padding: 14px 18px;
+
+            display: flex;
+            align-items: center;
+            gap: 17px;
+
+            font-weight: 700;
+            font-size: 16px;
+
+            transition: 0.2s;
+        }
+
+        .nav button:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(2px);
+        }
+
+        .nav button.active {
+            background:
+                linear-gradient(
+                    90deg,
+                    #f0d08f,
+                    #d8aa57
+                );
+
+            color: #24180e;
+
+            box-shadow:
+                0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .nav .ico {
+            width: 24px;
+
+            text-align: center;
+
+            font-size: 22px;
+        }
+
+        /* Sidebar parchment */
+
+        .quote {
+            position: absolute;
+
+            left: 26px;
+            right: 26px;
+            bottom: 28px;
+
+            min-height: 235px;
+
+            padding: 65px 28px 28px;
+
+            color: var(--quote-text);
+
+            background: var(--quote-bg);
+
+            clip-path: polygon(
+                5% 3%,
+                95% 0,
+                100% 95%,
+                90% 100%,
+                10% 97%,
+                0 90%,
+                2% 12%
+            );
+
+            box-shadow:
+                0 18px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .quote::before {
+            content: "✦";
+
+            position: absolute;
+
+            top: 24px;
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            font-size: 32px;
+
+            color: #87612d;
+        }
+
+        .quote p {
+            margin: 0;
+
+            font-family: Cinzel, serif;
+
+            font-weight: 700;
+
+            line-height: 1.45;
+
+            text-align: center;
+
+            font-size: 15px;
+        }
+
+        /* =========================================================
+           MAIN
+        ========================================================= */
+
+        .main {
+            position: relative;
+            z-index: 2;
+
+            margin-left: 285px;
+
+            padding: 20px 26px 34px;
+
+            max-width: 1400px;
+        }
+
+        /* Top bar */
+
+        .topbar {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 12px;
+        }
+
+        .welcome {
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+        }
+
+        .wave {
+            font-size: 46px;
+
+            filter:
+                drop-shadow(
+                    0 5px 8px rgba(0, 0, 0, 0.3)
+                );
+        }
+
+        .welcome h2 {
+            margin: 0;
+
+            font-family: Cinzel, serif;
+
+            font-size: 31px;
+        }
+
+        .welcome p {
+            margin: 5px 0 0;
+
+            font-family: Cinzel, serif;
+
+            font-size: 15px;
+
+            color: #f4dfbd;
+        }
+
+        .profile {
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: 8px;
+        }
+
+        .theme-switch {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: 62px;
+            height: 34px;
+            padding: 4px;
+            border: 0;
+            border-radius: 999px;
+            background: var(--switch-track);
+            box-shadow: inset 0 0 0 2px rgba(255,255,255,0.12);
+            transition: all 0.2s ease;
+        }
+
+        .theme-switch.is-light {
+            justify-content: flex-end;
+            background: #f0d088;
+        }
+
+        .switch-track {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0 2px;
+        }
+
+        .switch-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--switch-thumb);
+            color: var(--switch-thumb-label);
+            display: grid;
+            place-items: center;
+            font-size: 13px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.22);
+        }
+
+        .bell {
+            width: 45px;
+            height: 45px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 50%;
+
+            background: rgba(4, 24, 42, 0.72);
+
+            font-size: 21px;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 50%;
+
+            background: #e5a82b;
+
+            font-size: 25px;
+
+            border: 2px solid #f9cf69;
+        }
+
+        .profile strong {
+            font-family: Cinzel, serif;
+        }
+
+        .profile small {
+            opacity: 0.75;
+        }
+
+        /* Pirate flag video in the top-right profile area */
+        .pirate-flag-video {
+            width: 92px;
+            height: 58px;
+            object-fit: cover;
+            display: block;
+            border-radius: 12px;
+            border: 2px solid #f5c45b;
+            background: #07121b;
+            box-shadow:
+                0 6px 18px rgba(0, 0, 0, 0.35),
+                0 0 0 2px rgba(0, 0, 0, 0.18);
+        }
+
+        @media (max-width: 800px) {
+            .pirate-flag-video {
+                width: 68px;
+                height: 46px;
+            }
+        }
+
+        /* =========================================================
+           TREASURE LEDGER
+        ========================================================= */
+
+        .ledger {
+            position: relative;
+
+            overflow: hidden;
+
+            padding: 18px 28px 25px;
+
+            color: var(--ledger-text);
+
+            background: var(--ledger-bg);
+
+            border: 4px solid #69421c;
+
+            border-radius: 16px;
+
+            box-shadow:
+                0 18px 35px rgba(0, 0, 0, 0.38);
+        }
+
+        .ledger::before {
+            content: "";
+
+            position: absolute;
+
+            inset: 7px;
+
+            border: 1px solid rgba(91, 57, 24, 0.45);
+
+            border-radius: 10px;
+
+            pointer-events: none;
+        }
+
+        .ledger-head {
+            position: relative;
+            z-index: 1;
+
+            text-align: center;
+        }
+
+        .ledger-head h1 {
+            margin: 0;
+
+            font-family: Cinzel, serif;
+
+            font-size: 33px;
+
+            letter-spacing: 0.02em;
+        }
+
+        .ledger-head p {
+            margin: 2px 0 15px;
+
+            font-family: Cinzel, serif;
+
+            font-size: 14px;
+        }
+
+        .treasure {
+            position: absolute;
+
+            left: 25px;
+            top: 28px;
+
+            font-size: 65px;
+
+            filter:
+                drop-shadow(
+                    0 8px 5px rgba(70, 35, 5, 0.35)
+                );
+        }
+
+        .compass {
+            position: absolute;
+
+            right: 35px;
+            top: 24px;
+
+            font-size: 75px;
+
+            opacity: 0.6;
+        }
+
+        .total-label {
+            font-family: Cinzel, serif;
+
+            font-weight: 800;
+
+            font-size: 19px;
+        }
+
+        .total {
+            margin: 3px 0;
+
+            font-family: Cinzel, serif;
+
+            font-weight: 800;
+
+            font-size: 47px;
+
+            line-height: 1.05;
+
+            color: #24160d;
+        }
+
+        .change {
+            color: #167846;
+
+            font-weight: 800;
+        }
+
+        /* Balance cards */
+
+        .cards {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 17px;
+
+            margin-top: 18px;
+        }
+
+        .balance-card {
+            min-height: 115px;
+
+            display: grid;
+
+            grid-template-columns: 76px 1fr;
+
+            align-items: center;
+
+            padding: 15px 18px;
+
+            border-radius: 12px;
+
+            border: 2px solid rgba(0, 0, 0, 0.28);
+
+            box-shadow:
+                0 7px 12px rgba(0, 0, 0, 0.18);
+        }
+
+        .balance-card.red {
+            background:
+                linear-gradient(
+                    135deg,
+                    #7d1d18,
+                    #bd382b
+                );
+        }
+
+        .balance-card.green {
+            background:
+                linear-gradient(
+                    135deg,
+                    #075a31,
+                    #15904f
+                );
+        }
+
+        .balance-card.blue {
+            background:
+                linear-gradient(
+                    135deg,
+                    #06436f,
+                    #0a72b7
+                );
+        }
+
+        .balance-icon {
+            width: 60px;
+            height: 60px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 50%;
+
+            border: 1px solid rgba(255, 255, 255, 0.4);
+
+            font-size: 40px;
+        }
+
+        .balance-card h3 {
+            margin: 0 0 4px;
+
+            font-family: Cinzel, serif;
+
+            font-size: 18px;
+        }
+
+        .balance-card b {
+            font-family: Cinzel, serif;
+
+            font-size: 29px;
+        }
+
+        .balance-card p {
+            margin: 3px 0 0;
+
+            font-size: 11px;
+
+            opacity: 0.9;
+        }
+
+        /* =========================================================
+           CONTENT PANELS
+        ========================================================= */
+
+        .content-grid {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr) 345px;
+
+            gap: 18px;
+
+            margin-top: 18px;
+        }
+
+        .panel {
+            overflow: hidden;
+
+            background: var(--panel-bg);
+            color: var(--panel-text);
+
+            border: 2px solid rgba(130, 94, 50, 0.65);
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 15px 28px rgba(0, 0, 0, 0.34);
+        }
+
+        .panel-head {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 15px 20px;
+
+            border-bottom:
+                1px solid var(--line);
+        }
+
+        .panel-head h3 {
+            margin: 0;
+
+            font-family: Cinzel, serif;
+
+            font-size: 19px;
+        }
+
+        .panel-head span {
+            font-size: 12px;
+
+            opacity: 0.65;
+        }
+
+        /* Transactions */
+
+        .txn {
+            display: grid;
+
+            grid-template-columns:
+                52px 1fr auto auto;
+
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 12px 20px;
+
+            border-bottom:
+                1px solid rgba(255, 255, 255, 0.09);
+        }
+
+        .txn:last-child {
+            border-bottom: 0;
+        }
+
+        .face {
+            width: 44px;
+            height: 44px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 50%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #e5a32d,
+                    #6e321c
+                );
+
+            border: 2px solid #cda65d;
+
+            font-size: 23px;
+        }
+
+        .txn strong {
+            font-size: 14px;
+        }
+
+        .txn small {
+            display: block;
+
+            margin-top: 2px;
+
+            color: #c7c9ca;
+
+            font-size: 12px;
+        }
+
+        .txn .amount {
+            min-width: 70px;
+
+            text-align: right;
+
+            font-size: 16px;
+
+            font-weight: 800;
+        }
+
+        .status {
+            padding: 7px 12px;
+
+            border-radius: 8px;
+
+            font-size: 11px;
+
+            font-weight: 800;
+        }
+
+        .pending {
+            background: #e9a91b;
+
+            color: #2a1904;
+        }
+
+        .settled {
+            background: #16834b;
+
+            color: #fff;
+        }
+
+        /* Add expense */
+
+        .add-box {
+            min-height: 270px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 22px;
+
+            text-align: center;
+
+            background:
+                radial-gradient(
+                    circle at 50% 35%,
+                    rgba(148, 107, 53, 0.24),
+                    transparent 55%
+                );
+        }
+
+        .anchor {
+            margin-bottom: 12px;
+
+            font-size: 67px;
+
+            opacity: 0.9;
+        }
+
+        .add-btn {
+            border: 0;
+
+            padding: 14px 30px;
+
+            border-radius: 9px;
+
+            background:
+                linear-gradient(
+                    #d73d35,
+                    #9e211c
+                );
+
+            color: #fff;
+
+            font-family: Cinzel, serif;
+
+            font-weight: 800;
+
+            font-size: 17px;
+
+            box-shadow:
+                0 7px 15px rgba(0, 0, 0, 0.35);
+        }
+
+        .add-box p {
+            max-width: 220px;
+
+            color: #c7c9ca;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+        }
+
+        /* =========================================================
+           CREW
+        ========================================================= */
+
+        .crew {
+            margin-top: 18px;
+        }
+
+        .crew-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 12px;
+
+            padding: 12px;
+        }
+
+        .crew-card {
+            min-height: 130px;
+
+            padding: 12px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #172631,
+                    #0c171f
+                );
+
+            border: 1px solid rgba(255, 255, 255, 0.16);
+
+            border-radius: 10px;
+        }
+
+        .crew-card.you {
+            border: 2px solid #2084c5;
+
+            box-shadow:
+                0 0 20px rgba(26, 132, 204, 0.2);
+        }
+
+        .crew-top {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 8px;
+        }
+
+        .crew-face {
+            width: 48px;
+            height: 48px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 50%;
+
+            background: #5a381f;
+
+            font-size: 27px;
+
+            border: 2px solid #d8b66c;
+        }
+
+        .crew-card strong {
+            font-family: Cinzel, serif;
+        }
+
+        .crew-card small {
+            display: block;
+
+            color: #bfc6ca;
+        }
+
+        .metrics {
+            color: #ddd;
+
+            font-size: 12px;
+
+            line-height: 1.7;
+        }
+
+        .positive {
+            color: #27dd82;
+
+            font-weight: 800;
+        }
+
+        .negative {
+            color: #ff4e49;
+
+            font-weight: 800;
+        }
+
+        /* =========================================================
+           MODALS
+        ========================================================= */
+
+        .drawer {
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 60;
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .drawer.open {
+            display: flex;
+        }
+
+        .modal {
+            width: min(560px, 100%);
+
+            padding: 24px;
+
+            color: #24180e;
+
+            background: #f4dfb2;
+
+            border: 4px solid #6a431c;
+
+            border-radius: 16px;
+
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.6);
+        }
+
+        .modal h2 {
+            margin: 0 0 15px;
+
+            font-family: Cinzel, serif;
+        }
+
+        .modal label {
+            display: block;
+
+            margin: 10px 0 5px;
+
+            font-size: 12px;
+
+            font-weight: 800;
+        }
+
+        .modal input,
+        .modal select {
+            width: 100%;
+
+            padding: 11px;
+
+            border: 1px solid #b99b68;
+
+            border-radius: 8px;
+
+            background: #fff9ec;
+        }
+
+        .modal-actions {
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 10px;
+
+            margin-top: 16px;
+        }
+
+        .btn {
+            border: 0;
+
+            padding: 10px 15px;
+
+            border-radius: 8px;
+
+            font-weight: 800;
+        }
+
+        .btn.primary {
+            background: #b92e24;
+
+            color: #fff;
+        }
+
+        .btn.secondary {
+            background: #ded0ae;
+
+            color: #24180e;
+        }
+
+        /* =========================================================
+           4 SECOND VIDEO LOADER
+        ========================================================= */
+
+        .login-overlay {
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 1000;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            overflow: hidden;
+
+            background: #020b12;
+
+            transition:
+                opacity 0.7s ease,
+                visibility 0.7s ease;
+        }
+
+        .login-overlay.hidden {
+            opacity: 0;
+
+            visibility: hidden;
+
+            pointer-events: none;
+        }
+
+        .login-video {
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+
+            opacity: 1;
+
+            transition: opacity 0.45s ease;
+
+            filter:
+                saturate(1.12)
+                contrast(1.06);
+        }
+
+        .login-video.is-playing {
+            opacity: 1;
+        }
+
+        .login-shade {
+            position: absolute;
+
+            inset: 0;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(0, 0, 0, 0.58),
+                    rgba(0, 0, 0, 0.08),
+                    rgba(0, 0, 0, 0.4)
+                );
+        }
+
+        .login-title {
+            position: absolute;
+
+            text-align: center;
+
+            text-shadow:
+                0 10px 30px #000;
+        }
+
+        .login-title h1 {
+            margin: 0;
+
+            font-family: Cinzel, serif;
+
+            font-size:
+                clamp(3rem, 8vw, 7rem);
+        }
+
+        .login-title p {
+            margin: 8px 0 0;
+
+            color: #f5cf78;
+
+            font-weight: 800;
+
+            letter-spacing: 0.25em;
+
+            text-transform: uppercase;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 1100px) {
+
+            .sidebar {
+                width: 220px;
+            }
+
+            .main {
+                margin-left: 220px;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .crew-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                position: relative;
+
+                width: 100%;
+                height: auto;
+            }
+
+            .quote {
+                display: none;
+            }
+
+            .nav {
+                grid-template-columns:
+                    repeat(4, 1fr);
+            }
+
+            .nav button {
+                justify-content: center;
+
+                padding: 10px;
+            }
+
+            .nav button span:last-child {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+
+                padding: 14px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .crew-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .topbar {
+                align-items: flex-start;
+            }
+
+            .profile strong,
+            .profile small {
+                display: none;
+            }
+
+            .treasure,
+            .compass {
+                display: none;
+            }
+        }
+
+        @media (max-width: 520px) {
+
+            .nav {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .crew-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .txn {
+                grid-template-columns:
+                    42px 1fr auto;
+            }
+
+            .txn .status {
+                display: none;
+            }
+
+            .welcome h2 {
+                font-size: 22px;
+            }
+
+            .ledger {
+                padding: 18px 14px;
+            }
+
+            .ledger-head h1 {
+                font-size: 25px;
+            }
+
+            .total {
+                font-size: 38px;
+            }
+        }
+    
+.pane{margin:0 0 22px}.pane h2{margin:0 0 14px;font-family:Cinzel,serif}
+.row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.row>.grow{flex:1;min-width:0}.row small{display:block;color:var(--panel-muted)}
+.bar{height:10px;border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%}.pos{color:#3ddc84}.neg{color:#ff6b5e}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.tools input,.tools select{padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--panel-text)}
+.tools option{color:#000}.err{color:#b92e24;font-size:13px;min-height:16px;margin:4px 0}
+.split-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.split-row label{margin:0;display:flex;align-items:center;gap:8px;flex:1;color:var(--panel-text)}
+.split-row input[type="number"]{width:90px;padding:8px 9px;border-radius:8px;border:1px solid #b99b68;background:#fff9ec;color:#24180e}
+#toasts{position:fixed;right:18px;bottom:18px;z-index:99;display:grid;gap:8px}
+.toast{background:#07121b;color:#fff;border:1px solid var(--gold-dark);padding:11px 14px;border-radius:10px;display:flex;gap:12px;align-items:center;box-shadow:0 8px 30px #0008}
+.toast button{background:none;border:0;color:var(--gold);font-weight:700}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== Clean minimal theme (overrides) ===== */
+body,body[data-theme]{--bg:#f6f6f4;--surface:#fff;--ink:#17191c;--muted:#6b7078;--line:#e6e6e2;--accent:#2f3e5c;--good:#1f7a4d;--bad:#b23b34;
+--page-bg:var(--bg);--page-text:var(--ink);--panel-bg:var(--surface);--panel-text:var(--ink);--panel-muted:var(--muted);
+--sidebar-bg:var(--surface);--sidebar-text:var(--ink);--ledger-bg:var(--surface);--ledger-text:var(--ink);
+--quote-bg:transparent;--quote-text:var(--muted);--gold:var(--accent);--gold-dark:var(--line);--cream:var(--bg)}
+body,button,input,select{font-family:Inter,system-ui,sans-serif}
+body .app{background:var(--bg)}
+body .app::after,.ledger::before,.quote::before,.treasure,.compass,.anchor,.wave,.bell{display:none!important}
+body .sidebar{background:var(--surface);border-right:1px solid var(--line);box-shadow:none;color:var(--ink)}
+.brand-logo{background:var(--accent);color:#fff;border:0;box-shadow:none;font-size:24px}
+.brand h1,.welcome h2,.ledger-head h1,.pane h2,.modal h2,.panel-head h3{font-family:Inter,sans-serif;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+.brand p{color:var(--muted);font-weight:500}
+.nav button{color:var(--muted);font-weight:500;border-radius:8px}
+.nav button:hover{background:var(--hover);color:var(--ink)}
+.nav button.active{background:var(--accent);color:#fff;box-shadow:none;border:0}
+.quote{border:0;background:transparent;box-shadow:none;color:var(--muted)}.quote p{color:var(--muted);font-style:normal;font-family:Inter,sans-serif}
+.welcome p,.ledger-head p,.balance-card p,.profile small,.add-box p,.txn small,.crew-card small{color:var(--muted)}
+.profile strong,.txn strong,.crew-card strong{color:var(--ink)}
+body .ledger,body .panel,body .crew-card,body .balance-card{background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:none;border-radius:14px}
+body .ledger{padding:28px}
+.total-label{color:var(--muted);font-weight:500}
+.total{font-family:Inter,sans-serif;font-weight:700;color:var(--ink);letter-spacing:-.03em;text-shadow:none}
+.change{color:var(--muted);background:none;border:0}
+.balance-card h3{color:var(--muted);font-weight:500}.balance-card b{color:var(--ink)}
+.balance-card.red b{color:var(--bad)}.balance-card.green b{color:var(--good)}.balance-card.blue b{color:var(--accent)}
+.balance-icon{background:var(--chip)!important;color:var(--ink)!important;box-shadow:none;border:0}
+.panel-head{border-bottom:1px solid var(--line)}
+.txn{border-bottom:1px solid var(--line);background:transparent}
+.face,.crew-face{background:var(--chip);border:0;box-shadow:none}
+.txn .amount{color:var(--ink)}
+.status,.pending,.settled{background:var(--chip);color:var(--muted);border:0}.settled{color:var(--good)}
+body .add-box{background:var(--surface)}
+.add-btn,.btn.primary{background:var(--accent);color:#fff;border:0;box-shadow:none;border-radius:10px;font-weight:600}
+.add-btn:hover,.btn.primary:hover{background:#243149}
+.btn.secondary{background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:none;border-radius:10px}
+.btn.secondary:hover{background:var(--hover)}
+.crew-card.you{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.metrics{color:var(--muted)}.positive,.pos{color:var(--good)}.negative,.neg{color:var(--bad)}
+.bar{background:var(--chip)}
+.tools input,.tools select{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.drawer{background:rgba(20,22,26,.35);backdrop-filter:none}
+body .modal{background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:0 20px 50px rgba(0,0,0,.15);border-radius:16px}
+.modal label{color:var(--muted);font-weight:500}
+.modal input,.modal select{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px}
+#peopleChecks label{background:var(--chip)!important;color:var(--ink)!important}
+.toast{background:var(--ink);border:0}.toast button{color:#c9d3ea}
+.row{border-color:var(--line)}.err{color:var(--bad)}
+.login-shade{background:rgba(255,255,255,.55)}
+.login-title h1{font-family:Inter,sans-serif;font-weight:700;color:var(--ink);text-shadow:none}.login-title p{color:var(--muted);text-shadow:none}
+:focus-visible{outline-color:var(--accent)}
+
+/* ===== Bounty cards ===== */
+.bounty-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;padding-top:16px}
+.poster{background:#f4f0e6;color:#2a2620;border:1px solid #ddd6c4;border-radius:6px;padding:16px 14px 14px;text-align:center;position:relative}
+.poster::before{content:"";position:absolute;inset:6px;border:1px solid #cfc7b0;border-radius:3px;pointer-events:none}
+.poster h4{margin:0;font-family:Cinzel,serif;font-size:26px;letter-spacing:.06em;font-weight:800}
+.poster .pic{width:100%;aspect-ratio:1;object-fit:cover;margin:8px 0;border:1px solid #cfc7b0;filter:grayscale(.75) sepia(.25) contrast(1.05)}
+.poster .doa{font-family:Cinzel,serif;font-size:12px;letter-spacing:.14em;font-weight:700}
+.poster .nm{font-family:Cinzel,serif;font-size:20px;font-weight:700;margin:6px 0 2px}
+.poster .bty{font-family:Cinzel,serif;font-size:21px;font-weight:800;letter-spacing:.02em}
+.poster .sub{margin-top:8px;padding-top:8px;border-top:1px solid #cfc7b0;font-size:12px;color:#6b6555}
+.poster .sub b{color:#2a2620}
+
+body .balance-card.red,body .balance-card.green,body .balance-card.blue{background:var(--surface);border:1px solid var(--line);box-shadow:none;color:var(--ink)}
+body .balance-card h3,body .balance-card b,body .balance-card p{font-family:Inter,sans-serif;text-shadow:none;font-variant:normal}
+body .balance-card h3{color:var(--muted);font-weight:500;font-size:14px}
+body .balance-card b{font-weight:700;letter-spacing:-.02em}
+body .balance-card p{color:var(--muted)}
+body .balance-card.red b{color:var(--bad)}body .balance-card.green b{color:var(--good)}body .balance-card.blue b{color:var(--accent)}
+body .balance-card.red .balance-icon{color:var(--bad)!important}body .balance-card.green .balance-icon{color:var(--good)!important}body .balance-card.blue .balance-icon{color:var(--accent)!important}
+
+[hidden]{display:none!important}
+body,body[data-theme]{--chip:#f0f0ec;--hover:#efefeb}
+body[data-theme="dark"]{--bg:#101216;--surface:#181b21;--ink:#eceef2;--muted:#98a0ac;--line:#2a2e37;--accent:#8fa6d6;--good:#4cc58a;--bad:#f0837b;--chip:#232730;--hover:#20242c}
+body[data-theme="dark"] .add-btn,body[data-theme="dark"] .btn.primary,body[data-theme="dark"] .nav button.active,body[data-theme="dark"] .brand-logo{color:#101216}
+body[data-theme="dark"] .add-btn:hover,body[data-theme="dark"] .btn.primary:hover{background:#a5b8e0}
+body[data-theme="dark"] .login-shade{background:rgba(16,18,22,.6)}
+.set-group{padding:14px 0;border-bottom:1px solid var(--line)}.set-group h3{margin:0 0 4px;font-size:15px}.set-group p{margin:0 0 10px;color:var(--muted);font-size:13px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}.seg button{border:0;background:transparent;color:var(--ink);padding:9px 16px}.seg button.on{background:var(--accent);color:#fff}
+body[data-theme="dark"] .seg button.on{color:#101216}
+.day{margin:16px 0 4px;font-size:13px;font-weight:600;color:var(--muted)}
+
+.theme-btn{width:40px;height:40px;flex:none;display:inline-grid;place-items:center;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0}
+.theme-btn:hover{background:var(--hover)}
+.theme-btn path{stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;transform-box:fill-box;transform-origin:center;transition:stroke-dashoffset .6s ease,transform .6s ease}
+.theme-btn .sun{stroke-dashoffset:0;transform:scale(1)}.theme-btn .moon{stroke-dashoffset:1;transform:scale(0)}
+body[data-theme="dark"] .theme-btn .sun{stroke-dashoffset:1;transform:scale(0)}body[data-theme="dark"] .theme-btn .moon{stroke-dashoffset:0;transform:scale(1)}
+
+.theme-fade *:not(path),.theme-fade *::before,.theme-fade *::after{transition:background-color .6s ease,color .6s ease,border-color .6s ease,fill .6s ease,stroke .6s ease,box-shadow .6s ease,outline-color .6s ease!important}
+@media(prefers-reduced-motion:reduce){.theme-fade *:not(path),.theme-fade *::before,.theme-fade *::after{transition:none!important}}
+
+body .sidebar{display:flex;flex-direction:column;overflow-y:auto}
+body .quote{position:static;margin-top:auto;min-height:0;padding:16px 8px 4px;left:auto;right:auto;bottom:auto;font-size:13px;line-height:1.5;text-align:left}
+body .quote p{margin:0;font-weight:500;font-size:13px}
+@media(max-height:680px){body .quote{display:none}}
+body .pane{padding:22px 24px}
+body .pane h2{margin-top:0}
+body .welcome p,body .profile strong,body .profile small,body .brand p,body .nav button{font-family:Inter,system-ui,sans-serif}
+</style>
+</head>
+
+
+<body>
+
+    <!-- =========================================================
+         4 SECOND LOADING SCREEN
+    ========================================================= -->
+
+    <div class="login-overlay" id="loader">
+
+        <video
+            class="login-video"
+            id="loaderVideo"
+            autoplay
+            muted
+            playsinline
+            preload="auto"
+            poster="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80"
+        >
+            <source
+                src="Ship_sailing_on_ocean_20260928112604.mp4"
+                type="video/mp4"
+            >
+        </video>
+
+        <div class="login-shade"></div>
+
+        <div class="login-title">
+            <h1>GRAND LINE</h1>
+
+            <p>
+                Treasure Ledger
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         APPLICATION
+    ========================================================= -->
+
+    <div class="app">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <div class="brand">
+
+                <div class="brand-logo">
+                    ☠
+                </div>
+
+                <div>
+                    <h1>CrewSplit</h1>
+
+                    <p>
+                        Share the Adventure.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <nav class="nav">
+
+                <button
+                    class="active"
+                    onclick="showView('dashboard', this)"
+                >
+                    <span class="ico">⌂</span>
+                    <span>Dashboard</span>
+                </button>
+
+                <button
+                    onclick="showView('crew', this)"
+                >
+                    <span class="ico">♟</span>
+                    <span>My Crew</span>
+                </button>
+
+                <button
+                    onclick="showView('expenses', this)"
+                >
+                    <span class="ico">▣</span>
+                    <span>Expenses</span>
+                </button>
+
+                <button
+                    onclick="showView('balances', this)"
+                >
+                    <span class="ico">⚖</span>
+                    <span>Balances</span>
+                </button>
+
+                <button
+                    onclick="showView('settlements', this)"
+                >
+                    <span class="ico">⚔</span>
+                    <span>Settlements</span>
+                </button>
+
+                <button
+                    onclick="showView('history', this)"
+                >
+                    <span class="ico">◷</span>
+                    <span>History</span>
+                </button>
+
+                <button
+                    onclick="showView('settings', this)"
+                >
+                    <span class="ico">⚙</span>
+                    <span>Settings</span>
+                </button>
+
+            </nav>
+
+
+            <div class="quote">
+
+                <p>
+                    “Good friends and a fair split
+                    make the longest voyages shorter.”
+                </p>
+
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+
+        <main class="main">
+
+            <!-- TOP BAR -->
+
+            <div class="topbar">
+
+                <div class="welcome">
+
+                    <div class="wave">
+                        〰️
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Welcome back, Captain!
+                        </h2>
+
+                        <p>
+                            Track your crew's expenses
+                            and keep your treasure fair.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="profile"><button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle light and dark theme" aria-pressed="false" onclick="setTheme(document.body.dataset.theme==='dark'?'light':'dark')"><svg width="20" height="20" viewBox="0 0 25 25" fill="none" aria-hidden="true"><path class="sun" pathLength="1" d="M12.4058 17.7625C15.1672 17.7625 17.4058 15.5239 17.4058 12.7625C17.4058 10.0011 15.1672 7.76251 12.4058 7.76251C9.64434 7.76251 7.40576 10.0011 7.40576 12.7625C7.40576 15.5239 9.64434 17.7625 12.4058 17.7625Z"/><path class="sun" pathLength="1" d="M12.4058 1.76251V3.76251"/><path class="sun" pathLength="1" d="M12.4058 21.7625V23.7625"/><path class="sun" pathLength="1" d="M4.62598 4.98248L6.04598 6.40248"/><path class="sun" pathLength="1" d="M18.7656 19.1225L20.1856 20.5425"/><path class="sun" pathLength="1" d="M1.40576 12.7625H3.40576"/><path class="sun" pathLength="1" d="M21.4058 12.7625H23.4058"/><path class="sun" pathLength="1" d="M4.62598 20.5425L6.04598 19.1225"/><path class="sun" pathLength="1" d="M18.7656 6.40248L20.1856 4.98248"/><path class="moon" pathLength="1" d="M21.1918 13.2013C21.0345 14.9035 20.3957 16.5257 19.35 17.8781C18.3044 19.2305 16.8953 20.2571 15.2875 20.8379C13.6797 21.4186 11.9398 21.5294 10.2713 21.1574C8.60281 20.7854 7.07479 19.9459 5.86602 18.7371C4.65725 17.5283 3.81774 16.0003 3.4457 14.3318C3.07367 12.6633 3.18451 10.9234 3.76526 9.31561C4.346 7.70783 5.37263 6.29868 6.72501 5.25307C8.07739 4.20746 9.69959 3.56862 11.4018 3.41132C10.4052 4.75958 9.92564 6.42077 10.0503 8.09273C10.175 9.76469 10.8957 11.3364 12.0812 12.5219C13.2667 13.7075 14.8384 14.4281 16.5104 14.5528C18.1823 14.6775 19.8435 14.1979 21.1918 13.2013Z"/></svg></button>
+
+                    <video
+                        class="pirate-flag-video"
+                        autoplay
+                        muted
+                        loop
+                        playsinline
+                        preload="auto"
+                        aria-label="Waving pirate flag"
+                    >
+                        <source
+                            src="Pirate_flag_waving_on_ship_20260928120830.mp4"
+                            type="video/mp4"
+                        >
+                    </video>
+
+                    <div>
+                        <strong>
+                            Luffy⌄
+                        </strong>
+
+                        <small>
+                            Captain
+                        </small>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================================
+                 TREASURE LEDGER
+            ====================================================== -->
+
+            <section class="ledger">
+
+                <div class="treasure">
+                    🪙
+                </div>
+
+                <div class="compass">
+                    ✥
+                </div>
+
+
+                <div class="ledger-head">
+
+                    <h1>
+                        CREW TREASURE LEDGER
+                    </h1>
+
+                    <p>
+                        All expenses, balances and settlements
+                        in one place.
+                    </p>
+
+                    <div class="total-label">
+                        ▤ &nbsp; Total Crew Expenses
+                    </div>
+
+                    <div
+                        class="total"
+                        id="totalSpent"
+                    >
+                        ฿0
+                    </div>
+
+                    <div class="change">
+                        ↑ +12% from last month
+                    </div>
+
+                </div>
+
+
+                <!-- BALANCE CARDS -->
+
+                <div class="cards">
+
+                    <div class="balance-card red">
+
+                        <div class="balance-icon">
+                            ↓
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                You Owe
+                            </h3>
+
+                            <b id="toPay">
+                                ฿0
+                            </b>
+
+                            <p>
+                                Total amount you need to pay
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="balance-card green">
+
+                        <div class="balance-icon">
+                            ↑
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                You Get
+                            </h3>
+
+                            <b id="toReceive">
+                                ฿0
+                            </b>
+
+                            <p>
+                                Total amount you will receive
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="balance-card blue">
+
+                        <div class="balance-icon">
+                            ⚖
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Net Balance
+                            </h3>
+
+                            <b id="netBalance">
+                                ฿0
+                            </b>
+
+                            <p id="netText">
+                                Your current position
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =====================================================
+                 TRANSACTIONS + ADD EXPENSE
+            ====================================================== -->
+
+            <div class="content-grid">
+
+
+                <!-- TRANSACTIONS -->
+
+                <section class="panel">
+
+                    <div class="panel-head">
+
+                        <h3>
+                            ▤ &nbsp;
+                            Recent Crew Transactions
+                        </h3>
+
+                        <button class="btn secondary" onclick="showView('history')">View All</button>
+
+                    </div>
+
+                    <div id="transactions"></div>
+
+                </section>
+
+
+                <!-- ADD EXPENSE -->
+
+                <section class="panel add-box">
+
+                    <div class="anchor">
+                        ⚓
+                    </div>
+
+                    <button
+                        class="add-btn"
+                        onclick="openExpense()"
+                    >
+                        ＋ Add Expense
+                    </button>
+
+                    <p>
+                        Add a new expense for your crew
+                        and keep the journey fair!
+                    </p>
+
+                </section>
+
+            </div>
+
+
+            <!-- =====================================================
+                 CREW MEMBERS
+            ====================================================== -->
+
+            <section class="panel crew">
+
+                <div class="panel-head">
+
+                    <h3>
+                        ♟ &nbsp; Crew Members
+                    </h3>
+
+                    <button
+                        class="btn secondary"
+                        onclick="openCrew()"
+                    >
+                        ⚙ Manage Crew
+                    </button>
+
+                </div>
+
+                <div
+                    class="crew-grid"
+                    id="crewGrid"
+                ></div>
+
+            </section>
+
+        <section class="panel" id="bounty"><div class="panel-head"><h3>Crew Bounties</h3></div><div class="bounty-grid" id="bountyGrid"></div></section>
+<section class="panel pane" id="pane" hidden></section>
+<div id="toasts" aria-live="polite"></div>
+</main>
+
+    </div>
+
+
+    <!-- =========================================================
+         ADD EXPENSE MODAL
+    ========================================================= -->
+
+    <div
+        class="drawer"
+        id="expenseModal"
+    >
+
+        <div class="modal">
+
+            <h2>
+                Log Crew Treasure
+            </h2>
+
+
+            <label>
+                Expense name
+            </label>
+
+            <input
+                id="expenseName"
+                placeholder="Dinner at Ocean View"
+            >
+
+
+            <label>
+                Amount (฿)
+            </label>
+
+            <input
+                id="amount"
+                type="number"
+                min="0"
+                placeholder="1200"
+            >
+
+
+            <label>
+                Paid by
+            </label>
+
+            <select id="paidBy"></select>
+<label>Category</label><select id="cat"><option>Food</option><option>Supplies</option><option>Travel</option><option>Gear</option><option>Other</option></select>
+<div class="err" id="formErr" role="alert"></div>
+
+
+            <label>
+                Split type
+            </label>
+
+            <select id="splitMode" onchange="toggleSplitMode()">
+                <option value="equal">Equal split</option>
+                <option value="custom">Custom split</option>
+            </select>
+
+            <label>
+                Split between
+            </label>
+
+            <div id="peopleChecks"></div>
+
+            <div id="customSplitWrap" hidden>
+                <div style="margin-top:10px; font-size:12px; font-weight:800; color:#24180e;">Custom amounts (฿)</div>
+                <div id="customSplitInputs"></div>
+            </div>
+
+            <div class="modal-actions">
+
+                <button
+                    class="btn secondary"
+                    onclick="closeExpense()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    class="btn primary"
+                    onclick="saveExpense()"
+                >
+                    Save Expense
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         MANAGE CREW MODAL
+    ========================================================= -->
+
+    <div
+        class="drawer"
+        id="crewModal"
+    >
+
+        <div class="modal">
+
+            <h2>
+                Manage Crew
+            </h2>
+
+
+            <label>
+                Add crew member
+            </label>
+
+            <input
+                id="newMember"
+                placeholder="e.g. Robin"
+            >
+
+
+            <div class="modal-actions">
+
+                <button
+                    class="btn secondary"
+                    onclick="closeCrew()"
+                >
+                    Close
+                </button>
+
+                <button
+                    class="btn primary"
+                    onclick="addMember()"
+                >
+                    Add Member
+                </button>
+
+            </div>
+
+
+            <div
+                id="crewManageList"
+                style="margin-top:15px"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         JAVASCRIPT
+    ========================================================= -->
+
+    <script>
+const KEY="crewsplit-v3",THEME_KEY="crewsplit-theme";let ME="Luffy";
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const $=id=>document.getElementById(id);
+const fmt=p=>"฿"+(Math.round(p)/100).toLocaleString("en-US",{maximumFractionDigits:2});
+const ICON={Food:"🍖",Supplies:"📦",Travel:"⚓",Gear:"⚔️",Other:"💰"};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const day=n=>new Date(Date.now()-n*864e5).toISOString().slice(0,10);
+const SEED=()=>({groupName:"Straw Hat Crew",me:"Luffy",members:["Luffy","Nami","Sanji","Zoro"],payments:[],expenses:[
+{id:uid(),name:"Sushi at Baratie",amount:640000,paidBy:"Nami",split:["Luffy","Nami","Sanji","Zoro"],cat:"Food",date:day(9)},
+{id:uid(),name:"Crew supply run",amount:980000,paidBy:"Luffy",split:["Luffy","Nami","Sanji","Zoro"],cat:"Supplies",date:day(6)},
+{id:uid(),name:"Sword maintenance",amount:420000,paidBy:"Zoro",split:["Zoro","Luffy"],cat:"Gear",date:day(4)},
+{id:uid(),name:"Ship kitchen restock",amount:1250000,paidBy:"Sanji",split:["Luffy","Nami","Sanji","Zoro"],cat:"Food",date:day(1)}]});
+let state;try{state=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}
+if(!state||!Array.isArray(state.expenses))state=SEED();
+state.groupName=state.groupName||"Straw Hat Crew";state.me=state.me||state.members[0]||"Luffy";ME=state.me;
+let view="dashboard",undo=null;
+const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast("Storage full or blocked — changes won't persist")}};
+function customShares(e){if(!e.custom||typeof e.custom!="object")return null;const members=(e.split||[]).filter(m=>m in e.custom);if(!members.length)return null;const out={};let total=0;members.forEach(m=>{const value=Math.max(0,Number(e.custom[m])||0);out[m]=Math.round(value);total+=out[m];});if(!total)return null;const diff=e.amount-total;if(Math.abs(diff)>1){const last=members[members.length-1];out[last]=(out[last]||0)+diff;}return out}
+/* integer-cent split: remainder distributed so shares always sum exactly */
+function shares(e){const custom=customShares(e);if(custom)return custom;const n=e.split.length,b=Math.floor(e.amount/n),r=e.amount-b*n,o={};e.split.forEach((m,i)=>o[m]=b+(i<r?1:0));return o}
+function balances(){const b={};state.members.forEach(m=>b[m]={paid:0,share:0,net:0});
+state.expenses.forEach(e=>{if(!b[e.paidBy])return;b[e.paidBy].paid+=e.amount;const s=shares(e);for(const m in s)if(b[m])b[m].share+=s[m]});
+state.payments.forEach(p=>{if(b[p.from]&&b[p.to]){b[p.from].paid+=p.amount;b[p.to].paid-=p.amount}});
+for(const m in b)b[m].net=b[m].paid-b[m].share;return b}
+/* greedy min-cash-flow: fewest transfers that clear all debts */
+function plan(){const b=balances(),d=[],c=[];for(const m in b){if(b[m].net<0)d.push([m,-b[m].net]);else if(b[m].net>0)c.push([m,b[m].net])}
+d.sort((x,y)=>y[1]-x[1]);c.sort((x,y)=>y[1]-x[1]);const t=[];let i=0,j=0;
+while(i<d.length&&j<c.length){const a=Math.min(d[i][1],c[j][1]);if(a>0)t.push({from:d[i][0],to:c[j][0],amount:a});d[i][1]-=a;c[j][1]-=a;if(!d[i][1])i++;if(!c[j][1])j++}return t}
+function toast(msg,action,fn){const t=document.createElement("div");t.className="toast";t.innerHTML=`<span>${esc(msg)}</span>`;
+if(action){const b=document.createElement("button");b.textContent=action;b.onclick=()=>{fn();t.remove()};t.append(b)}
+$("toasts").append(t);setTimeout(()=>t.remove(),action?6000:3500)}
+function applyTheme(th){th=th==="dark"?"dark":"light";document.body.setAttribute("data-theme",th);const b=$("themeBtn");if(b)b.setAttribute("aria-pressed",String(th==="dark"))}
+function save(){persist();render()}
+function txnRow(e,del){const s=e.paidBy;return `<div class="txn"><div class="face">${ICON[e.cat]||"💰"}</div><div><strong>${esc(e.paidBy)} paid · ${esc(e.name)}</strong><small>${esc(e.date)} · ${esc(e.cat)} · split ${e.split.length} way${e.split.length>1?"s":""}</small></div><div class="amount">${fmt(e.amount)}</div>${del?`<button class="btn secondary" aria-label="Delete ${esc(e.name)}" onclick="delExpense('${e.id}')">×</button>`:""}</div>`}
+function render(){ME=state.members.includes(state.me)?state.me:state.members[0];const pn=document.querySelector(".profile strong");if(pn)pn.textContent=ME+"⌄";const ledgerTitle=document.querySelector(".ledger-head h1");if(ledgerTitle)ledgerTitle.textContent=(state.groupName||"Straw Hat Crew").toUpperCase()+" VOYAGE LEDGER";const b=balances(),tot=state.expenses.reduce((a,e)=>a+e.amount,0),me=b[ME]||{net:0,paid:0,share:0};
+$("totalSpent").textContent=fmt(tot);
+$("toPay").textContent=fmt(Math.max(0,-me.net));$("toReceive").textContent=fmt(Math.max(0,me.net));
+$("netBalance").textContent=(me.net>=0?"+":"-")+fmt(Math.abs(me.net));
+$("netText").textContent=me.net>0?"You are in credit":me.net<0?"You owe the crew":"You're all square";
+const now=new Date(),ym=d=>d.slice(0,7),cur=ym(now.toISOString()),pv=ym(new Date(now.getFullYear(),now.getMonth()-1,15).toISOString());
+const sum=k=>state.expenses.filter(e=>ym(e.date)===k).reduce((a,e)=>a+e.amount,0),c=sum(cur),p=sum(pv);
+const ch=document.querySelector(".change");ch.textContent=p?`${c>=p?"↑ +":"↓ "}${Math.round((c-p)/p*100)}% vs last month`:`${fmt(c)} spent this month`;
+$("transactions").innerHTML=state.expenses.length?state.expenses.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,6).map(e=>txnRow(e)).join(""):"<p>No expenses yet — log your first treasure.</p>";
+$("crewGrid").innerHTML=state.members.map(m=>{const x=b[m];return `<div class="crew-card ${m===ME?"you":""}"><div class="crew-top"><div class="crew-face">${{Luffy:"🏴‍☠️",Nami:"💰",Sanji:"🍽️",Zoro:"⚔️"}[m]||"⚓"}</div><div><strong>${esc(m)}</strong>${m===ME?"<small>(You)</small>":""}</div></div><div class="metrics">Paid: ${fmt(x.paid)}<br>Share: ${fmt(x.share)}<br>Balance: <span class="${x.net>=0?"positive":"negative"}">${x.net>=0?"+":""}${fmt(x.net)}</span></div></div>`}).join("");
+renderBounty();renderPane()}
+const BOUNTY={Luffy:{b:3000000000,t:"Straw Hat"},Zoro:{b:1111000000,t:"Pirate Hunter"},Sanji:{b:1032000000,t:"Black Leg"},Nami:{b:366000000,t:"Cat Burglar"}};
+function renderBounty(){const bl=balances(),o=["Luffy","Zoro","Sanji","Nami"].filter(n=>state.members.includes(n));
+$("bountyGrid").innerHTML=o.map(n=>{const x=bl[n],d=BOUNTY[n];return `<article class="poster"><h4>WANTED</h4><img class="pic" src="bounty-${n.toLowerCase()}.jpg" alt="${n}" loading="lazy" onerror="this.style.display='none'"><div class="doa">DEAD OR ALIVE</div><div class="nm">${n}</div><div class="bty">฿ ${d.b.toLocaleString("en-US")}-</div><div class="sub">“${d.t}” · Paid <b>${fmt(x.paid)}</b> · <span class="${x.net>=0?"pos":"neg"}">${x.net>=0?"+":"-"}${fmt(Math.abs(x.net))}</span></div></article>`}).join("")||"<p>No bounty crew members yet.</p>"}
+function renderPane(){const P=$("pane"),dash=view==="dashboard";
+document.querySelector(".ledger").hidden=!dash;document.querySelector(".content-grid").hidden=!dash;document.querySelector(".panel.crew").hidden=!(dash||view==="crew");P.hidden=dash||view==="crew";$("bounty").hidden=!dash;
+if(dash||view==="crew")return;const b=balances();let h="";
+if(view==="balances"){const mx=Math.max(1,...Object.values(b).map(x=>Math.abs(x.net)));h=`<h2>Balances</h2>`+state.members.map(m=>{const n=b[m].net;return `<div class="row"><div class="grow"><strong>${esc(m)}</strong><small>Paid ${fmt(b[m].paid)} · Share ${fmt(b[m].share)}</small><div class="bar"><i style="width:${Math.abs(n)/mx*100}%;background:${n>=0?"#3ddc84":"#ff6b5e"}"></i></div></div><b class="${n>=0?"pos":"neg"}">${n>=0?"+":"-"}${fmt(Math.abs(n))}</b></div>`}).join("")}
+if(view==="settlements"){const t=plan();h=`<h2>Settle Up</h2><p>${t.length?`${t.length} payment${t.length>1?"s":""} clears every debt:`:"Everyone is square. Fair winds! 🏴‍☠️"}</p>`+t.map((x,i)=>`<div class="row"><div class="grow"><strong>${esc(x.from)} → ${esc(x.to)}</strong></div><b>${fmt(x.amount)}</b><button class="btn primary" onclick="settle(${i})">Mark paid</button></div>`).join("")+(state.payments.length?`<h3>Payments made</h3>`+state.payments.slice().reverse().map(p=>`<div class="row"><div class="grow">${esc(p.from)} paid ${esc(p.to)}<small>${esc(p.date)}</small></div><b>${fmt(p.amount)}</b></div>`).join(""):"")}
+if(view==="history"){const hf=$("hf")?.value||"";const ev=[];
+if(hf!=="pay")state.expenses.forEach((e,i)=>ev.push({t:"e",d:e.date,i,e}));
+if(hf!=="exp")state.payments.forEach((x,i)=>ev.push({t:"p",d:x.date,i:i+.5,e:x}));
+ev.sort((a,b)=>b.d.localeCompare(a.d)||b.i-a.i);
+const lab=d=>d===day(0)?"Today":d===day(1)?"Yesterday":new Date(d+"T00:00").toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});
+let last="",body="";ev.forEach(x=>{if(x.d!==last){last=x.d;body+=`<div class="day">${esc(lab(x.d))}</div>`}
+body+=x.t==="e"?txnRow(x.e):`<div class="txn"><div class="face">✅</div><div><strong>${esc(x.e.from)} paid ${esc(x.e.to)}</strong><small>Settlement</small></div><div class="amount">${fmt(x.e.amount)}</div></div>`});
+h=`<h2>History</h2><div class="tools"><select id="hf" aria-label="Filter activity" onchange="renderPane()"><option value="">All activity</option><option value="exp"${hf==="exp"?" selected":""}>Expenses</option><option value="pay"${hf==="pay"?" selected":""}>Settlements</option></select></div>`+(body||"<p>No activity yet.</p>")}
+if(view==="expenses"){const q=($("q")?.value||"").toLowerCase(),cf=$("cf")?.value||"";const list=state.expenses.filter(e=>(!q||(e.name+e.paidBy).toLowerCase().includes(q))&&(!cf||e.cat===cf)).sort((a,b)=>b.date.localeCompare(a.date));
+h=`<h2>${view==="history"?"History":"All Expenses"}</h2><div class="tools"><input id="q" type="search" placeholder="Search…" aria-label="Search expenses" value="${esc(q)}" oninput="renderPane();$('q').focus()"><select id="cf" aria-label="Filter category" onchange="renderPane()"><option value="">All categories</option>${Object.keys(ICON).map(c=>`<option ${c===cf?"selected":""}>${c}</option>`).join("")}</select><button class="btn secondary" onclick="openExpense()">＋ Add</button><button class="btn secondary" onclick="exportCSV()">Export CSV</button></div>`+(list.map(e=>txnRow(e,true)).join("")||"<p>Nothing matches.</p>")+`<p><small>${list.length} record${list.length!==1?"s":""} · ${fmt(list.reduce((a,e)=>a+e.amount,0))}</small></p>`}
+if(view==="settings"){const dk=document.body.getAttribute("data-theme")==="dark";
+h=`<h2>Settings</h2>
+<div class="set-group"><h3>Group</h3><p>Rename your crew and keep the voyage ledger on-brand.</p><div class="tools"><input id="groupNameInput" type="text" value="${esc(state.groupName||"Straw Hat Crew")}" placeholder="Crew name" aria-label="Group name" /><button class="btn primary" onclick="setGroupName($('groupNameInput').value)">Save name</button></div></div>
+<div class="set-group"><h3>Profile</h3><p>Who are you? Your balances and the “You Owe / You Get” cards follow this.</p><select aria-label="I am" class="tools" style="padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)" onchange="setMe(this.value)">${state.members.map(m=>`<option ${m===ME?"selected":""}>${esc(m)}</option>`).join("")}</select></div>
+<div class="set-group"><h3>Appearance</h3><p>Choose a light or dark interface.</p><div class="seg"><button class="${dk?"":"on"}" onclick="setTheme('light')">Light</button><button class="${dk?"on":""}" onclick="setTheme('dark')">Dark</button></div></div>
+<div class="set-group"><h3>Your data</h3><p>${state.expenses.length} expenses · ${state.payments.length} settlements · ${state.members.length} crew, stored in this browser only.</p><div class="tools"><button class="btn secondary" onclick="exportCSV()">Export CSV</button><button class="btn secondary" onclick="exportJSON()">Backup (JSON)</button><label class="btn secondary">Restore backup<input type="file" accept=".json" hidden onchange="importJSON(this.files[0])"></label></div></div>
+<div class="set-group"><h3>Danger zone</h3><p>Replace everything with the demo crew. You can undo right after.</p><button class="btn secondary" onclick="resetAll()">Reset to demo data</button></div>`}
+P.innerHTML=h}
+function showView(v,btn){view=v;document.querySelectorAll(".nav button").forEach(i=>i.classList.remove("active"));btn&&btn.classList.add("active");
+if(v==="crew")openCrew();renderPane();window.scrollTo({top:0,behavior:"smooth"})}
+function openSettings(){showView("settings",event&&event.currentTarget)}
+function setGroupName(v){const name=(v||"").trim();if(!name){toast("Choose a crew name");return}state.groupName=name;save();render();toast(`Crew renamed to ${name}`)}
+function setMe(v){state.me=v;save();toast(`Now viewing as ${v}`)}
+function setTheme(t){try{localStorage.setItem(THEME_KEY,t)}catch(e){}const r=document.documentElement;r.classList.add("theme-fade");applyTheme(t);renderPane();clearTimeout(window._tf);window._tf=setTimeout(()=>r.classList.remove("theme-fade"),700)}
+function settle(i){const t=plan()[i];if(!t)return;state.payments.push({...t,id:uid(),date:day(0)});save();toast(`${t.from} paid ${t.to} ${fmt(t.amount)}`)}
+function delExpense(id){const i=state.expenses.findIndex(e=>e.id===id);if(i<0)return;const [e]=state.expenses.splice(i,1);save();toast(`Deleted “${e.name}”`,"Undo",()=>{state.expenses.splice(i,0,e);save()})}
+function toggleSplitMode(){const mode=$("splitMode").value;const wrap=$("customSplitWrap");wrap.hidden=mode!=="custom";if(mode==="custom"){renderCustomSplitInputs();}}
+function renderCustomSplitInputs(){const members=[...document.querySelectorAll("#peopleChecks input:checked")].map(i=>i.value);$("customSplitInputs").innerHTML=members.map(m=>`<div class="split-row"><label><input type="checkbox" checked disabled> ${esc(m)}</label><input type="number" min="0" step="0.01" value="0" data-member="${esc(m)}" /></div>`).join("");}
+function openExpense(){$("paidBy").innerHTML=state.members.map(m=>`<option>${esc(m)}</option>`).join("");
+$("peopleChecks").innerHTML=state.members.map(m=>`<label style="display:inline-block;margin:4px 8px 4px 0;background:#eadfbd;padding:7px 9px;border-radius:7px"><input type="checkbox" value="${esc(m)}" checked onchange="renderCustomSplitInputs()"> ${esc(m)}</label>`).join("");
+$("splitMode").value="equal";$("customSplitWrap").hidden=true;$("customSplitInputs").innerHTML="";$("formErr").textContent="";$("expenseModal").classList.add("open");$("expenseName").focus();renderCustomSplitInputs();}
+function closeExpense(){$("expenseModal").classList.remove("open")}
+function saveExpense(){const name=$("expenseName").value.trim(),amt=Math.round(parseFloat($("amount").value)*100),paidBy=$("paidBy").value,split=[...document.querySelectorAll("#peopleChecks input:checked")].map(i=>i.value),splitMode=$("splitMode").value;
+let custom=null;if(splitMode==="custom"){custom={};let total=0;for(const m of split){const value=Math.max(0,Number(document.querySelector(`#customSplitInputs input[data-member="${m}"]`)?.value||0));custom[m]=Math.round(value*100);total+=custom[m];}if(Math.abs(total-amt)>1){$("formErr").textContent="Custom split totals must equal the full expense amount.";return}};
+const er=!name?"Give the expense a name.":!(amt>0)?"Enter an amount above zero.":amt>1e10?"That amount looks too large.":!split.length?"Pick at least one person to split with.":"";
+if(er){$("formErr").textContent=er;return}
+state.expenses.push({id:uid(),name:name.slice(0,80),amount:amt,paidBy,split,cat:$("cat").value,date:day(0),custom:splitMode==="custom"?custom:null});
+$("expenseName").value="";$("amount").value="";closeExpense();save();toast("Expense logged")}
+function openCrew(){renderCrewList();$("crewModal").classList.add("open");$("newMember").focus()}
+function closeCrew(){$("crewModal").classList.remove("open");if(view==="crew"){view="dashboard";document.querySelectorAll(".nav button").forEach((b,i)=>b.classList.toggle("active",i===0));renderPane()}}
+function renderCrewList(){$("crewManageList").innerHTML=state.members.map((m,i)=>`<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #cdbb91"><b>${esc(m)}</b><button class="btn secondary" aria-label="Remove ${esc(m)}" onclick="removeMember(${i})">×</button></div>`).join("")}
+function addMember(){const n=$("newMember").value.trim().slice(0,30);if(!n)return;if(state.members.some(m=>m.toLowerCase()===n.toLowerCase())){toast("That crew member already exists");return}
+state.members.push(n);$("newMember").value="";save();renderCrewList()}
+function removeMember(i){const m=state.members[i];if(state.members.length<=1)return toast("A crew needs at least one pirate");
+if(state.expenses.some(e=>e.paidBy===m||e.split.includes(m))||state.payments.some(p=>p.from===m||p.to===m))return toast(`${m} has expenses on record — settle and delete those first`);
+state.members.splice(i,1);save();renderCrewList()}
+function dl(name,type,txt){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function exportCSV(){const q=v=>`"${String(v).replace(/"/g,'""')}"`;dl("crewsplit-expenses.csv","text/csv",["Date,Name,Category,Paid by,Amount,Split between",...state.expenses.map(e=>[e.date,e.name,e.cat,e.paidBy,e.amount/100,e.split.join("; ")].map(q).join(","))].join("\n"))}
+function exportJSON(){dl("crewsplit-backup.json","application/json",JSON.stringify(state,null,2))}
+function importJSON(f){if(!f)return;f.text().then(t=>{const d=JSON.parse(t);if(!Array.isArray(d.members)||!Array.isArray(d.expenses))throw 0;d.payments=d.payments||[];state=d;save();toast("Backup restored")}).catch(()=>toast("That file isn't a valid CrewSplit backup"))}
+function resetAll(){const old=state;state=SEED();save();toast("Demo data restored","Undo",()=>{state=old;save()})}
+window.addEventListener("load",()=>{
+    let th="light";
+    try{th=localStorage.getItem(THEME_KEY)||"light"}catch(e){}
+    applyTheme(th);
+    render();
+
+    // ===== 4 SECOND VIDEO LOADER =====
+    const loader=document.getElementById("loader");
+    const video=document.getElementById("loaderVideo");
+
+    if(loader){
+        // Keep the loader visible immediately.
+        loader.classList.remove("hidden");
+
+        if(video){
+            video.muted=true;
+            video.defaultMuted=true;
+            video.autoplay=true;
+            video.playsInline=true;
+            video.setAttribute("muted","");
+            video.setAttribute("autoplay","");
+            video.setAttribute("playsinline","");
+
+            // Do not make the loader dependent on the `playing` event.
+            video.classList.add("is-playing");
+
+            const playVideo=()=>{
+                const p=video.play();
+                if(p && p.catch) p.catch(()=>{});
+            };
+
+            if(video.readyState>=2) playVideo();
+            else video.addEventListener("canplay",playVideo,{once:true});
+        }
+
+        // The app ALWAYS appears after 4 seconds, whether video plays or not.
+        setTimeout(()=>{
+            loader.classList.add("hidden");
+            setTimeout(()=>loader.remove(),800);
+        },4000);
+    }
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".drawer.open").forEach(d=>d.classList.remove("open"))});
+document.querySelectorAll(".drawer").forEach(d=>d.addEventListener("click",e=>{if(e.target===d)d.classList.remove("open")}));
+document.querySelectorAll(".modal input").forEach(i=>i.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("expenseModal").classList.contains("open")?saveExpense():addMember()}}));
+</script>
+
+</body>
+
+</html>
