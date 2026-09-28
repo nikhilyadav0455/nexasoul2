@@ -30,7 +30,7 @@
       height: 1080px;
       position: relative;
       overflow: hidden;
-      padding: 70px 90px;
+      padding: 55px 80px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -47,7 +47,7 @@
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid rgba(220, 185, 110, 0.2);
-      padding-bottom: 24px;
+      padding-bottom: 18px;
     }
 
     .brand-tag {
@@ -64,8 +64,8 @@
     .brand-tag span {
       display: inline-grid;
       place-items: center;
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       background: rgba(243, 206, 122, 0.15);
       border: 1.5px solid #f3ce7a;
       border-radius: 10px;
@@ -74,163 +74,332 @@
 
     .slide-num {
       font-family: 'Space Grotesk', monospace;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
       color: #94a3b8;
       letter-spacing: 2px;
       background: rgba(255, 255, 255, 0.05);
-      padding: 8px 18px;
+      padding: 6px 16px;
       border-radius: 999px;
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     /* Titles */
     .title-group {
-      margin-top: 15px;
+      margin-top: 10px;
+      margin-bottom: 16px;
     }
 
     .eyebrow {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       color: #f59e0b;
       letter-spacing: 3px;
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .eyebrow::before {
       content: '';
       display: inline-block;
-      width: 24px;
-      height: 2px;
+      width: 8px;
+      height: 8px;
       background: #f59e0b;
+      border-radius: 50%;
     }
 
     h1 {
       font-family: 'Cinzel', serif;
-      font-size: 54px;
+      font-size: 40px;
       font-weight: 800;
-      color: #ffffff;
       line-height: 1.15;
-      letter-spacing: 1px;
+      color: #ffffff;
+      letter-spacing: 0.5px;
     }
 
     h1 em {
       font-style: normal;
       color: #f3ce7a;
-      text-shadow: 0 0 25px rgba(243, 206, 122, 0.4);
+      text-shadow: 0 0 25px rgba(243, 206, 122, 0.35);
     }
 
     .subtitle {
-      font-size: 22px;
+      font-size: 17px;
       color: #94a3b8;
-      margin-top: 10px;
-      max-width: 1200px;
-      line-height: 1.5;
+      margin-top: 6px;
+      max-width: 1400px;
+      line-height: 1.4;
     }
 
-    /* Content Layouts */
+    /* Grids */
+    .split-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      flex: 1;
+      align-items: stretch;
+      min-height: 0;
+    }
+
+    .split-layout.uneven {
+      grid-template-columns: 1.05fr 0.95fr;
+    }
+
     .content-grid {
       display: grid;
-      gap: 32px;
-      margin-top: 20px;
+      gap: 20px;
       flex: 1;
-      align-content: center;
+      min-height: 0;
     }
 
     .grid-2 {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, 1fr);
     }
 
     .grid-3 {
       grid-template-columns: repeat(3, 1fr);
     }
 
-    .grid-4 {
-      grid-template-columns: repeat(4, 1fr);
-    }
-
     /* Cards */
     .card {
-      background: rgba(10, 22, 38, 0.7);
-      border: 1.5px solid rgba(220, 185, 110, 0.22);
-      border-radius: 20px;
-      padding: 34px;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
       position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
     }
 
     .card.highlight {
-      border-color: rgba(245, 158, 11, 0.6);
-      background: linear-gradient(145deg, rgba(16, 34, 58, 0.85), rgba(8, 20, 36, 0.95));
-      box-shadow: 0 20px 50px rgba(245, 158, 11, 0.15);
+      background: rgba(243, 206, 122, 0.05);
+      border-color: rgba(243, 206, 122, 0.28);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
     }
 
     .card-icon {
-      font-size: 38px;
-      margin-bottom: 16px;
+      font-size: 26px;
+      margin-bottom: 12px;
       display: inline-block;
     }
 
     .card h3 {
-      font-size: 24px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
       font-weight: 700;
       color: #f8fafc;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
-    .card p, .card li {
-      font-size: 18px;
-      color: #94a3b8;
-      line-height: 1.6;
+    .card.highlight h3 {
+      color: #f3ce7a;
+    }
+
+    .card p {
+      font-size: 15px;
+      color: #cbd5e1;
+      line-height: 1.5;
     }
 
     .card ul {
       list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
-    .card li {
-      margin-bottom: 12px;
-      padding-left: 24px;
+    .card ul li {
+      font-size: 15px;
+      color: #cbd5e1;
+      line-height: 1.45;
       position: relative;
+      padding-left: 24px;
     }
 
-    .card li::before {
-      content: '✦';
+    .card ul li::before {
+      content: '▸';
       position: absolute;
       left: 0;
       color: #f59e0b;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .card ul li strong {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    /* Live Screenshot Mockup Frame */
+    .mockup-container {
+      background: #020617;
+      border: 1.5px solid rgba(243, 206, 122, 0.3);
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.65), 0 0 35px rgba(243, 206, 122, 0.1);
+      position: relative;
+    }
+
+    .mockup-bar {
+      height: 36px;
+      background: #0b1322;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+
+    .mockup-dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .mockup-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #eab308; }
+    .dot-green { background: #22c55e; }
+
+    .mockup-url {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 12px;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px 16px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .mockup-badge {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: #22c55e;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mockup-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: #22c55e;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #22c55e;
+    }
+
+    .mockup-body {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mockup-body img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+
+    .mockup-caption {
+      background: rgba(7, 17, 29, 0.92);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 12px 18px;
       font-size: 14px;
-      top: 2px;
+      color: #cbd5e1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .card strong {
-      color: #f1f5f9;
+    .mockup-caption strong {
+      color: #f3ce7a;
     }
 
-    /* Pills / Badges */
+    /* Avatar Showcase Grid */
+    .avatar-showcase {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .avatar-item {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(243, 206, 122, 0.2);
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .avatar-item img {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #f3ce7a;
+    }
+
+    .avatar-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .avatar-role {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    /* Badges & Pills */
     .pill-group {
       display: flex;
+      gap: 8px;
+      margin-top: 12px;
       flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 18px;
     }
 
     .pill {
-      font-size: 15px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
       font-weight: 700;
-      padding: 8px 18px;
-      border-radius: 999px;
-      background: rgba(245, 158, 11, 0.12);
-      color: #fbbf24;
-      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 4px 12px;
+      border-radius: 6px;
+      background: rgba(243, 206, 122, 0.12);
+      color: #f3ce7a;
+      border: 1px solid rgba(243, 206, 122, 0.25);
+      letter-spacing: 0.5px;
     }
 
     .pill-blue {
@@ -251,8 +420,8 @@
       justify-content: space-between;
       align-items: center;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding-top: 20px;
-      font-size: 16px;
+      padding-top: 16px;
+      font-size: 15px;
       color: #64748b;
       font-weight: 500;
     }
@@ -263,42 +432,41 @@
       font-weight: 700;
     }
 
-    /* Special Elements */
+    /* Stats & Snippets */
     .stat-box {
       background: rgba(243, 206, 122, 0.08);
       border: 1.5px solid rgba(243, 206, 122, 0.3);
-      border-radius: 16px;
-      padding: 22px 28px;
+      border-radius: 14px;
+      padding: 16px 20px;
       text-align: center;
-      margin-top: 16px;
+      margin-top: 12px;
     }
 
     .stat-number {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 48px;
+      font-size: 42px;
       font-weight: 800;
       color: #fbbf24;
       line-height: 1;
     }
 
     .stat-desc {
-      font-size: 15px;
+      font-size: 14px;
       color: #cbd5e1;
       font-weight: 600;
-      margin-top: 6px;
-      letter-spacing: 0.5px;
+      margin-top: 4px;
     }
 
     .code-snippet {
       font-family: 'Space Grotesk', monospace;
-      font-size: 16px;
+      font-size: 14px;
       background: #020617;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      padding: 16px 20px;
+      border-radius: 10px;
+      padding: 12px 16px;
       color: #38bdf8;
-      margin-top: 12px;
-      line-height: 1.5;
+      margin-top: 10px;
+      line-height: 1.45;
     }
   </style>
 </head>
@@ -314,30 +482,52 @@
     <div class="title-group">
       <p class="eyebrow">Project Overview &amp; Problem Statement</p>
       <h1>Gamifying Shared Finances:<br><em>The Grand Line Ledger</em></h1>
-      <p class="subtitle">An interactive group expense tracking and debt-minimization engine that replaces awkward social debt chasing with collaborative voyage storytelling.</p>
+      <p class="subtitle">An interactive group expense tracking and debt-minimization engine that replaces awkward social debt chasing with collaborative anime voyage storytelling.</p>
     </div>
 
-    <div class="content-grid grid-2">
-      <div class="card">
-        <span class="card-icon">⚡</span>
-        <h3>The Real-World Problem</h3>
-        <ul>
-          <li><strong>Messy Shared Expenses:</strong> Group trips, hackathons, and flatshares lead to scattered bills, forgotten payments, and fractured chat threads.</li>
-          <li><strong>Awkward Debt Collection:</strong> Pestering friends for small splits creates psychological tension and social friction.</li>
-          <li><strong>Circular Debt Inefficiencies:</strong> In a group where A owes B, B owes C, and C owes A, members execute redundant transactions that rack up bank transfer fees.</li>
-          <li><strong>Boring Spreadsheets:</strong> Tools like Splitwise have become paywalled, complex, and uninspiring to maintain.</li>
-        </ul>
+    <div class="split-layout">
+      <!-- Left Column: Problem & Solution -->
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div class="card" style="flex: 1;">
+          <span class="card-icon">⚡</span>
+          <h3>The Real-World Problem</h3>
+          <ul>
+            <li><strong>Messy Shared Expenses:</strong> Group travel, hackathons, and flatshares lead to scattered bills, forgotten payments, and fractured chat threads.</li>
+            <li><strong>Social Friction &amp; Awkwardness:</strong> Chasing friends for small debts creates psychological dread and peer tension.</li>
+            <li><strong>Circular Debt Inefficiencies:</strong> Redundant multi-party debts incur unnecessary banking steps and transaction fees.</li>
+            <li><strong>Uninspired Tools:</strong> Traditional spreadsheets and corporate trackers are tedious, paywalled, and cumbersome.</li>
+          </ul>
+        </div>
+
+        <div class="card highlight" style="flex: 1;">
+          <span class="card-icon">🧭</span>
+          <h3>Our Proposed Solution</h3>
+          <ul>
+            <li><strong>Gamified Voyage Adventure:</strong> Turning shared expenses into "crew settlements" creates an engaging, stress-free social experience.</li>
+            <li><strong>Debt Minimization Engine:</strong> Consolidates circular liabilities into minimal pairwise transactions in O(N log N) time.</li>
+            <li><strong>Zero Setup Friction:</strong> 100% on-device privacy, local persistence, and no compulsory account sign-ups.</li>
+          </ul>
+        </div>
       </div>
 
-      <div class="card highlight">
-        <span class="card-icon">🧭</span>
-        <h3>Our Proposed Solution</h3>
-        <ul>
-          <li><strong>Gamified Voyage UX:</strong> Shared finances are reframed into an exhilarating pirate voyage where debts are treated as "crew settlements".</li>
-          <li><strong>Algorithmic Debt Minimization:</strong> A greedy two-pointer graph engine consolidates circular debts into the minimum possible pairwise settlements.</li>
-          <li><strong>Zero Barrier to Entry:</strong> 100% client-side privacy, instantaneous local persistence, and no mandatory registration.</li>
-          <li><strong>Complete Financial Transparency:</strong> One-click CSV voyage manifests, category expense metrics, and printable receipts.</li>
-        </ul>
+      <!-- Right Column: Live Web Screenshot Mockup -->
+      <div class="mockup-container">
+        <div class="mockup-bar">
+          <div class="mockup-dots">
+            <span class="dot-red"></span>
+            <span class="dot-yellow"></span>
+            <span class="dot-green"></span>
+          </div>
+          <div class="mockup-url">https://nexasoul2.vercel.app</div>
+          <div class="mockup-badge">Live Production</div>
+        </div>
+        <div class="mockup-body">
+          <img src="public/assets/ss-live-login.png" alt="Live Grand Line Ledger Login and Character Carousel">
+        </div>
+        <div class="mockup-caption">
+          <span><strong>Live Interface:</strong> Interactive Character Carousel with Bounty HUD</span>
+          <span style="color: #38bdf8;">Next.js 16 • Turbopack</span>
+        </div>
       </div>
     </div>
 
@@ -364,7 +554,7 @@
       <div class="card">
         <span class="card-icon">⚓</span>
         <h3>Multi-Crew Ledger</h3>
-        <p>Manage separate independent groups (e.g. Vacation, Flatmates, Roadtrip) in a single interface with isolated balances and dedicated member rosters.</p>
+        <p>Manage multiple independent groups (e.g. Vacation, Flatmates, Roadtrip) in a single interface with isolated balances and dedicated member rosters.</p>
         <div class="pill-group">
           <span class="pill">Context Isolation</span>
           <span class="pill">Instant Switching</span>
@@ -446,8 +636,8 @@
         <span class="card-icon">💻</span>
         <h3>Frontend Framework</h3>
         <ul>
-          <li><strong>Next.js 16 (App Router):</strong> Turbopack compilation delivering sub-second hot reload and build times.</li>
-          <li><strong>React 19 &amp; TypeScript:</strong> Strict compile-time type safety for complex financial calculation pipelines.</li>
+          <li><strong>Next.js 16 (App Router):</strong> Turbopack compilation delivering sub-second hot reload and production builds.</li>
+          <li><strong>React 19 &amp; TypeScript:</strong> Strict compile-time type safety for all financial calculation pipelines.</li>
           <li><strong>Motion (Framer Motion):</strong> Hardware-accelerated spring animations for fluid carousel and scene transitions.</li>
         </ul>
       </div>
@@ -473,7 +663,7 @@
         <h3>Data &amp; Infrastructure</h3>
         <ul>
           <li><strong>Offline-First Persistence:</strong> Self-healing schema validation stored in browser LocalStorage across versions v1–v5.</li>
-          <li><strong>Resilient Image Pipeline:</strong> Layered avatar fallback with non-destructive error handling.</li>
+          <li><strong>Resilient Image Pipeline:</strong> 22 bundled character avatars with automatic name mapping and non-destructive fallbacks.</li>
           <li><strong>Vercel Edge Network:</strong> Globally deployed edge distribution with 99.9% uptime and zero server latency.</li>
         </ul>
       </div>
@@ -498,27 +688,85 @@
       <p class="subtitle">What makes Grand Line Ledger distinct, defensible, and uniquely useful compared to existing alternatives.</p>
     </div>
 
-    <div class="content-grid grid-2">
-      <div class="card">
-        <span class="card-icon">✨</span>
-        <h3>Novelty vs. Existing Solutions</h3>
-        <ul>
-          <li><strong>Narrative Immersion:</strong> Replaces cold corporate grids with animated voyage cutscenes, Day/Night theme toggles, and nautical soundscapes.</li>
-          <li><strong>22 Character Avatars + Auto-Match:</strong> Comprehensive roster of One Piece legends (Luffy, Roger, Garp, Shanks, Ace, Blackbeard, Law) that automatically highlights as you type member names.</li>
-          <li><strong>Synthesizer-Driven Audio:</strong> Zero audio file downloads; procedural coin sound synthesis directly via Web Audio API oscillators.</li>
-          <li><strong>Self-Healing State Engine:</strong> Upgrades legacy data structures in background without wiping user transaction records.</li>
-        </ul>
+    <div class="split-layout uneven">
+      <!-- Left Column: Novelty & USP Points -->
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div class="card" style="flex: 1;">
+          <span class="card-icon">✨</span>
+          <h3>Novelty vs. Existing Solutions</h3>
+          <ul>
+            <li><strong>Narrative Immersion:</strong> Replaces cold corporate grids with animated voyage cutscenes, Day/Night theme toggles, and nautical soundscapes.</li>
+            <li><strong>Smart Character Matching:</strong> Type names like "Shanks", "Luffy", or "Zoro" and the ledger automatically assigns their authentic avatar.</li>
+            <li><strong>Synthesizer-Driven Audio:</strong> Zero audio file downloads; procedural coin sound synthesis directly via Web Audio API oscillators.</li>
+          </ul>
+        </div>
+
+        <div class="card highlight" style="flex: 1;">
+          <span class="card-icon">💎</span>
+          <h3>The 4 Pillars of Our USP</h3>
+          <ul>
+            <li><strong>1. Zero Social Friction:</strong> Gamifying bill-splitting into a shared quest turns debt collection into camaraderie.</li>
+            <li><strong>2. 100% Privacy &amp; Zero Lock-In:</strong> No compulsory phone numbers or data harvesting; fully private on-device.</li>
+            <li><strong>3. Mathematical Optimality:</strong> Automatically resolves circular debts, eliminating redundant transactions.</li>
+            <li><strong>4. Real-World Auditability:</strong> One-click CSV voyage manifests and printable physical receipts.</li>
+          </ul>
+        </div>
       </div>
 
-      <div class="card highlight">
-        <span class="card-icon">💎</span>
-        <h3>The 4 Pillars of Our USP</h3>
-        <ul>
-          <li><strong>1. Zero Social Friction:</strong> Gamifying bill-splitting into a shared quest turns uncomfortable debt chasing into lighthearted collaboration.</li>
-          <li><strong>2. 100% Privacy &amp; Zero Lock-In:</strong> No compulsory phone numbers, passwords, or cloud data harvesting. Completely private and on-device.</li>
-          <li><strong>3. Mathematical Optimality:</strong> Automatically resolves circular debts, eliminating redundant transactions and peer-to-peer transfer fees.</li>
-          <li><strong>4. Real-World Auditability:</strong> One-click CSV exports and cleanly formatted physical print receipts ensure peace of mind.</li>
-        </ul>
+      <!-- Right Column: Avatar Showcase Grid -->
+      <div class="card" style="justify-content: space-between;">
+        <div>
+          <span class="card-icon">🏴‍☠️</span>
+          <h3>22 Custom Anime Avatars</h3>
+          <p>Built-in high-resolution roster automatically assigned to crew members:</p>
+          <div class="avatar-showcase">
+            <div class="avatar-item">
+              <img src="public/assets/luffy.webp" alt="Luffy">
+              <span class="avatar-name">Luffy</span>
+              <span class="avatar-role">Captain</span>
+            </div>
+            <div class="avatar-item">
+              <img src="public/assets/zoro.webp" alt="Zoro">
+              <span class="avatar-name">Zoro</span>
+              <span class="avatar-role">Swordsman</span>
+            </div>
+            <div class="avatar-item">
+              <img src="public/assets/nami.webp" alt="Nami">
+              <span class="avatar-name">Nami</span>
+              <span class="avatar-role">Navigator</span>
+            </div>
+            <div class="avatar-item">
+              <img src="public/assets/sanji.webp" alt="Sanji">
+              <span class="avatar-name">Sanji</span>
+              <span class="avatar-role">Cook</span>
+            </div>
+            <div class="avatar-item">
+              <img src="public/assets/shanks.png" alt="Shanks">
+              <span class="avatar-name">Shanks</span>
+              <span class="avatar-role">Emperor</span>
+            </div>
+            <div class="avatar-item">
+              <img src="public/assets/roger.jpg" alt="Roger">
+              <span class="avatar-name">Roger</span>
+              <span class="avatar-role">Pirate King</span>
+            </div>
+            <div class="avatar-item">
+              <img src="public/assets/whitebeard.jpg" alt="Whitebeard">
+              <span class="avatar-name">Whitebeard</span>
+              <span class="avatar-role">Legend</span>
+            </div>
+            <div class="avatar-item">
+              <img src="public/assets/ace.jpg" alt="Ace">
+              <span class="avatar-name">Ace</span>
+              <span class="avatar-role">Commander</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-box" style="margin-top: 14px;">
+          <div class="stat-number">22</div>
+          <div class="stat-desc">Authentic Avatars + Auto-Name Matching</div>
+        </div>
       </div>
     </div>
 
@@ -538,44 +786,58 @@
     <div class="title-group">
       <p class="eyebrow">Demo &amp; Verification</p>
       <h1>Live Results, <em>Demo &amp; Verification</em></h1>
-      <p class="subtitle">Fully implemented, tested, and running in high-performance production.</p>
+      <p class="subtitle">Fully implemented, tested, and running in high-performance production on Vercel Edge.</p>
     </div>
 
-    <div class="content-grid grid-3">
-      <div class="card highlight">
-        <span class="card-icon">🚀</span>
-        <h3>Live Production Deployment</h3>
-        <p>The application is live and accessible globally with instant edge delivery:</p>
-        <div class="stat-box" style="margin-top: 18px;">
-          <div class="stat-desc" style="font-size: 16px; color: #fbbf24; font-weight: 700;">LIVE URL</div>
-          <div class="stat-desc" style="font-size: 20px; color: #ffffff; word-break: break-all; margin-top: 8px;">
-            https://nexasoul2.vercel.app
+    <div class="split-layout uneven">
+      <!-- Left Column: Stats & Links -->
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div class="card highlight">
+          <span class="card-icon">🚀</span>
+          <h3>Live Production Deployment</h3>
+          <p>Globally accessible with edge distribution and zero setup:</p>
+          <div class="stat-box" style="margin-top: 12px;">
+            <div class="stat-desc" style="font-size: 14px; color: #fbbf24; font-weight: 700;">PRODUCTION URL</div>
+            <div class="stat-desc" style="font-size: 18px; color: #ffffff; word-break: break-all; margin-top: 6px;">
+              https://nexasoul2.vercel.app
+            </div>
+          </div>
+          <div class="pill-group" style="justify-content: center; margin-top: 12px;">
+            <span class="pill pill-green">✓ SSL Encrypted</span>
+            <span class="pill pill-green">✓ Edge Deployed</span>
+            <span class="pill pill-green">✓ 100/100 Lighthouse</span>
           </div>
         </div>
-        <div class="pill-group" style="justify-content: center; margin-top: 18px;">
-          <span class="pill pill-green">✓ SSL Encrypted</span>
-          <span class="pill pill-green">✓ Edge Deployed</span>
+
+        <div class="card">
+          <span class="card-icon">📦</span>
+          <h3>Source Code &amp; Submission Deliverables</h3>
+          <ul>
+            <li><strong>Live GitHub Repository:</strong> <code>https://github.com/nikhilyadav0455/nexasoul2</code></li>
+            <li><strong>Complete Project Archive:</strong> <code>Grand-Line-Ledger-Complete.zip</code> (~16.3 MB) containing all source files, video, and audio.</li>
+            <li><strong>1-Click Local Execution:</strong> Double-click <code>start-local.bat</code> or run <code>npm run dev</code>.</li>
+          </ul>
         </div>
       </div>
 
-      <div class="card">
-        <span class="card-icon">📦</span>
-        <h3>Open Source &amp; Submission</h3>
-        <ul>
-          <li><strong>Complete ZIP Archive:</strong> <code>Grand-Line-Ledger-Complete.zip</code> (~14.2 MB) packaged with full Next.js source, components, video, and assets.</li>
-          <li><strong>GitHub Repository:</strong> Clean architecture with strict TypeScript definitions and Turbopack support.</li>
-          <li><strong>Zero Configuration Setup:</strong> Instant local preview via <code>npm run dev</code> or standalone browser execution.</li>
-        </ul>
-      </div>
-
-      <div class="card">
-        <span class="card-icon">📈</span>
-        <h3>Impact &amp; Performance Metrics</h3>
-        <ul>
-          <li><strong>100% Client Availability:</strong> Zero network dependencies for core calculation and ledger persistence.</li>
-          <li><strong>Sub-10ms UI Interactions:</strong> Optimistic state updates and real-time count-up animations for balance changes.</li>
-          <li><strong>Cross-Platform Accessibility:</strong> Fully responsive design adapted for desktop, tablet, and mobile with high-contrast Light and Dark themes.</li>
-        </ul>
+      <!-- Right Column: Real Live Play Screenshot of Settlements -->
+      <div class="mockup-container">
+        <div class="mockup-bar">
+          <div class="mockup-dots">
+            <span class="dot-red"></span>
+            <span class="dot-yellow"></span>
+            <span class="dot-green"></span>
+          </div>
+          <div class="mockup-url">https://nexasoul2.vercel.app/index.html</div>
+          <div class="mockup-badge">Live Settlement Dashboard</div>
+        </div>
+        <div class="mockup-body">
+          <img src="public/assets/ss-live-settlements.png" alt="Live Settlement Dashboard with Red Haired Pirates crew and Beli currency">
+        </div>
+        <div class="mockup-caption">
+          <span><strong>Live Play:</strong> Red Haired Pirates crew settling pairwise debts in ฿ Beli</span>
+          <span style="color: #34d399; font-weight: bold;">0 Owed • All Settled</span>
+        </div>
       </div>
     </div>
 
